@@ -8,7 +8,8 @@ ENV NODE_ENV=production
 # Dependencies stage
 FROM base AS deps
 COPY package.json package-lock.json* ./
-RUN npm ci --include=dev
+COPY prisma ./prisma
+RUN npm ci --include=dev --ignore-scripts
 
 # Builder stage
 FROM base AS builder
