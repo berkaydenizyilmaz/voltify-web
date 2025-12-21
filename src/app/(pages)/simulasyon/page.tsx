@@ -99,9 +99,14 @@ export default function SimulasyonPage() {
               </div>
               <div className="space-y-2">
                 <Label>Model</Label>
-                <Select value={selectedModel} onValueChange={setSelectedModel}>
+                <Select
+                  value={selectedModel}
+                  onValueChange={(value) =>
+                    setSelectedModel(value || "catboost")
+                  }
+                >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Model seçin" />
+                    <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     {MODELS.map((m) => (

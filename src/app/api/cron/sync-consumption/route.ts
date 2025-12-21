@@ -19,7 +19,7 @@ export async function GET(request: Request) {
 
   try {
     // Sync last 48 hours (to catch any delayed data)
-    const synced = await syncFromEpias(48);
+    const synced = await syncFromEpias();
 
     return NextResponse.json({
       success: true,
