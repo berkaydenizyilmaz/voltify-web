@@ -1,151 +1,202 @@
-import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  Database01Icon,
+  CloudIcon,
+  CpuIcon,
+  Layers01Icon,
+  CodeIcon,
+  ServerStack01Icon,
+} from "@hugeicons/core-free-icons";
 
 export default function HakkindaPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 pb-10">
       <div>
-        <h1 className="text-2xl font-bold">Hakkında</h1>
-        <p className="text-muted-foreground">
-          Voltify projesi hakkında bilgiler
+        <h1 className="text-3xl font-bold">Proje Hakkında</h1>
+        <p className="text-muted-foreground mt-2 text-lg max-w-3xl">
+          Voltify, Türkiye Elektrik Piyasası&apos;nın dinamiklerini analiz
+          ederek, yapay zeka destekli yüksek doğruluklu tüketim tahminleri sunan
+          bir Ar-Ge projesidir.
         </p>
       </div>
 
-      {/* Overview */}
-      <Card className="p-6">
-        <h2 className="mb-4 text-lg font-semibold">Proje Özeti</h2>
-        <p className="text-muted-foreground">
-          Voltify, Türkiye geneli saatlik elektrik tüketimini tahmin eden bir
-          makine öğrenmesi uygulamasıdır. Hava durumu verileri ve geçmiş tüketim
-          değerlerini kullanarak önümüzdeki 7 gün için saatlik tahminler üretir.
-        </p>
-      </Card>
+      {/* Main Goal Section */}
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card className="p-6 bg-linear-to-br from-primary/5 to-transparent border-primary/20">
+          <h2 className="text-xl font-semibold mb-3 flex items-center gap-2">
+            <HugeiconsIcon icon={CpuIcon} size={24} className="text-primary" />
+            Projenin Amacı
+          </h2>
+          <p className="text-muted-foreground leading-relaxed">
+            Enerji piyasalarında arz-talep dengesinin sağlanması, hem maliyet
+            optimizasyonu hem de şebeke kararlılığı için kritiktir. Bu proje,{" "}
+            <strong>EPİAŞ</strong> Şeffaflık Platformu&apos;ndan alınan Gerçek
+            Zamanlı Tüketim verileri ve meteorolojik değişkenleri birleştirerek,
+            Türkiye geneli elektrik talebini %99&apos;un üzerinde bir doğrulukla
+            öngörmeyi amaçlamaktadır.
+          </p>
+        </Card>
 
-      {/* Architecture */}
-      <Card className="p-6">
-        <h2 className="mb-4 text-lg font-semibold">Mimari</h2>
-        <div className="space-y-4">
+        <Card className="p-6">
+          <h2 className="text-xl font-semibold mb-3 flex items-center gap-2">
+            <HugeiconsIcon
+              icon={Layers01Icon}
+              size={24}
+              className="text-blue-500"
+            />
+            Kullanılan Metodoloji
+          </h2>
+          <p className="text-muted-foreground leading-relaxed">
+            Zaman serisi analizi ve denetimli makine öğrenmesi (Supervised
+            Learning) teknikleri harmanlanmıştır. Veri setimiz,{" "}
+            <strong>20.000+ saatlik</strong> tarihsel veriden oluşmakta olup,
+            mevsimsellik, tatil günleri ve hava durumu etkilerini modellemek
+            için özellik mühendisliği (Feature Engineering) süreçlerinden
+            geçirilmiştir.
+          </p>
+        </Card>
+      </div>
+
+      {/* Data Sources and Processing */}
+      <h2 className="text-2xl font-bold mt-4">Veri Kaynakları ve İşleme</h2>
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* EPİAŞ */}
+        <Card className="p-6">
           <div className="flex items-start gap-4">
-            <Badge variant="outline" className="mt-0.5 shrink-0">
-              Frontend
-            </Badge>
+            <div className="p-3 bg-orange-500/10 rounded-lg text-orange-600">
+              <HugeiconsIcon icon={Database01Icon} size={24} />
+            </div>
             <div>
-              <p className="font-medium">Next.js 16</p>
-              <p className="text-sm text-muted-foreground">
-                React Server Components, Server Actions, App Router
+              <h3 className="font-semibold text-lg text-orange-700 dark:text-orange-400">
+                EPİAŞ Veri Servisi
+              </h3>
+              <p className="text-sm text-foreground/80 mt-1 mb-3 font-medium">
+                Enerji Piyasaları İşletme A.Ş.
               </p>
+              <p className="text-sm text-muted-foreground">
+                Modelimiz, eğitim ve doğrulama süreçlerinde hedef değişken
+                (Ground Truth) olarak EPİAŞ tarafından yayınlanan{" "}
+                <strong>Gerçek Zamanlı Tüketim</strong> verilerini kullanır.
+                Veriler saatlik frekansta (MWh) çekilmekte ve anlık olarak
+                doğrulanmaktadır.
+              </p>
+              <div className="mt-4 flex gap-2">
+                <Badge
+                  variant="outline"
+                  className="border-orange-500/20 text-orange-600 bg-orange-500/5"
+                >
+                  Gerçek Zamanlı Tüketim
+                </Badge>
+                <Badge
+                  variant="outline"
+                  className="border-orange-500/20 text-orange-600 bg-orange-500/5"
+                >
+                  UEÇM
+                </Badge>
+              </div>
             </div>
           </div>
+        </Card>
+
+        {/* Open-Meteo */}
+        <Card className="p-6">
           <div className="flex items-start gap-4">
-            <Badge variant="outline" className="mt-0.5 shrink-0">
-              Backend
-            </Badge>
+            <div className="p-3 bg-blue-500/10 rounded-lg text-blue-600">
+              <HugeiconsIcon icon={CloudIcon} size={24} />
+            </div>
             <div>
-              <p className="font-medium">FastAPI</p>
-              <p className="text-sm text-muted-foreground">
-                ML model inference, feature engineering
+              <h3 className="font-semibold text-lg text-blue-700 dark:text-blue-400">
+                Meteorolojik Veriler
+              </h3>
+              <p className="text-sm text-foreground/80 mt-1 mb-3 font-medium">
+                Nüfus Ağırlıklı Hava Durumu Modeli
               </p>
+              <p className="text-sm text-muted-foreground">
+                Tek bir sıcaklık değeri yerine, Türkiye elektrik tüketimini en
+                çok etkileyen 7 büyük ilin verileri, nüfus oranlarına göre
+                ağırlıklandırılarak modele verilir.
+              </p>
+
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                {[
+                  { name: "İstanbul", w: "44%" },
+                  { name: "Ankara", w: "15%" },
+                  { name: "İzmir", w: "13%" },
+                  { name: "Bursa", w: "9%" },
+                  { name: "Antalya", w: "8%" },
+                  { name: "Adana", w: "6%" },
+                  { name: "Konya", w: "5%" },
+                ].map((city) => (
+                  <Badge
+                    key={city.name}
+                    variant="secondary"
+                    className="text-[10px]"
+                  >
+                    {city.name} {city.w}
+                  </Badge>
+                ))}
+              </div>
             </div>
           </div>
-          <div className="flex items-start gap-4">
-            <Badge variant="outline" className="mt-0.5 shrink-0">
-              Database
-            </Badge>
-            <div>
-              <p className="font-medium">PostgreSQL + Prisma</p>
-              <p className="text-sm text-muted-foreground">
-                Tahminler ve gerçek tüketim verileri
-              </p>
-            </div>
-          </div>
-          <div className="flex items-start gap-4">
-            <Badge variant="outline" className="mt-0.5 shrink-0">
-              ML
-            </Badge>
-            <div>
-              <p className="font-medium">CatBoost, LightGBM, XGBoost</p>
-              <p className="text-sm text-muted-foreground">
-                3 farklı gradient boosting modeli
-              </p>
-            </div>
-          </div>
-        </div>
-      </Card>
+        </Card>
+      </div>
 
-      {/* Data Sources */}
-      <Card className="p-6">
-        <h2 className="mb-4 text-lg font-semibold">Veri Kaynakları</h2>
-        <div className="space-y-4">
-          <div>
-            <p className="font-medium">Open-Meteo</p>
-            <p className="text-sm text-muted-foreground">
-              7 büyük şehir için saatlik hava durumu tahminleri (nüfus ağırlıklı
-              ortalama)
-            </p>
-            <p className="mt-1 font-mono text-xs text-muted-foreground">
-              api.open-meteo.com
-            </p>
+      {/* Technology Stack Grid */}
+      <h2 className="text-2xl font-bold mt-4">Teknoloji Yığını</h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="p-4 border-l-4 border-l-blue-500">
+          <div className="flex items-center gap-2 mb-3">
+            <HugeiconsIcon
+              icon={CodeIcon}
+              size={20}
+              className="text-blue-500"
+            />
+            <span className="font-bold">Frontend & UI</span>
           </div>
-          <div>
-            <p className="font-medium">EPİAŞ Şeffaflık Platformu</p>
-            <p className="text-sm text-muted-foreground">
-              Türkiye geneli gerçek zamanlı elektrik tüketim verileri (UECM)
-            </p>
-            <p className="mt-1 font-mono text-xs text-muted-foreground">
-              seffaflik.epias.com.tr
-            </p>
+          <ul className="space-y-2 text-sm text-muted-foreground list-disc list-inside">
+            <li>Next.js 15 (App Router)</li>
+            <li>React Server Components</li>
+            <li>TailwindCSS v4</li>
+            <li>Shadcn/UI & Recharts</li>
+          </ul>
+        </Card>
+
+        <Card className="p-4 border-l-4 border-l-green-500">
+          <div className="flex items-center gap-2 mb-3">
+            <HugeiconsIcon
+              icon={ServerStack01Icon}
+              size={20}
+              className="text-green-500"
+            />
+            <span className="font-bold">Backend & API</span>
           </div>
-        </div>
-      </Card>
+          <ul className="space-y-2 text-sm text-muted-foreground list-disc list-inside">
+            <li>Python FastAPI</li>
+            <li>Pydantic v2</li>
+            <li>PostgreSQL (Veritabanı)</li>
+            <li>Prisma ORM</li>
+          </ul>
+        </Card>
 
-      {/* Cities */}
-      <Card className="p-6">
-        <h2 className="mb-4 text-lg font-semibold">Hava Durumu Şehirleri</h2>
-        <p className="mb-4 text-sm text-muted-foreground">
-          Hava durumu verileri aşağıdaki şehirlerden nüfus ağırlıklı olarak
-          toplanmaktadır:
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {[
-            { name: 'İstanbul', weight: '44%' },
-            { name: 'Ankara', weight: '15%' },
-            { name: 'İzmir', weight: '13%' },
-            { name: 'Bursa', weight: '9%' },
-            { name: 'Antalya', weight: '8%' },
-            { name: 'Adana', weight: '6%' },
-            { name: 'Konya', weight: '5%' },
-          ].map((city) => (
-            <Badge key={city.name} variant="secondary">
-              {city.name} ({city.weight})
-            </Badge>
-          ))}
-        </div>
-      </Card>
-
-      {/* Tech Stack */}
-      <Card className="p-6">
-        <h2 className="mb-4 text-lg font-semibold">Teknolojiler</h2>
-        <div className="flex flex-wrap gap-2">
-          {[
-            'Next.js 16',
-            'React 19',
-            'TypeScript',
-            'Tailwind CSS 4',
-            'shadcn/ui',
-            'Prisma',
-            'FastAPI',
-            'Python',
-            'CatBoost',
-            'LightGBM',
-            'XGBoost',
-            'PostgreSQL',
-          ].map((tech) => (
-            <Badge key={tech} variant="outline">
-              {tech}
-            </Badge>
-          ))}
-        </div>
-      </Card>
+        <Card className="p-4 border-l-4 border-l-purple-500">
+          <div className="flex items-center gap-2 mb-3">
+            <HugeiconsIcon
+              icon={CpuIcon}
+              size={20}
+              className="text-purple-500"
+            />
+            <span className="font-bold">AI & ML Core</span>
+          </div>
+          <ul className="space-y-2 text-sm text-muted-foreground list-disc list-inside">
+            <li>CatBoost / XGBoost / LightGBM</li>
+            <li>Scikit-Learn (Metrics)</li>
+            <li>Pandas & NumPy</li>
+            <li>Joblib (Model Serialization)</li>
+          </ul>
+        </Card>
+      </div>
     </div>
-  )
+  );
 }
