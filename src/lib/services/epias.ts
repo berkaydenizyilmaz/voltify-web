@@ -9,17 +9,30 @@ const EPIAS_AUTH_URL = "https://giris.epias.com.tr/cas/v1/tickets";
 // TGT cache (in-memory, refreshes on restart)
 let cachedTgt: { token: string; expiresAt: number } | null = null;
 
-interface UecmResponse {
+// API Response structure - Gerçek Zamanlı Tüketim (Real Time Consumption)
+// Endpoint: POST /v1/consumption/data/realtime-consumption
+interface RealTimeConsumptionApiResponse {
   items: Array<{
-    date: string;
+    consumption: number; // Tüketim Miktarı (MWh)
+    date: string; // date-time format
+    time: string; // time string
+  }>;
+  page: unknown;
+  statistics: unknown;
+}
+
+// Normalized response for our app
+interface ConsumptionResponse {
+  items: Array<{
+    date: string; // YYYY-MM-DD
     hour: number;
     consumption: number; // MWh
   }>;
 }
 
-interface UecmRequest {
-  startDate: string; // YYYY-MM-DD
-  endDate: string; // YYYY-MM-DD
+interface ConsumptionRequest {
+  startDate: string; // 2023-01-01T00:00:00+03:00 format
+  endDate: string; // 2023-01-01T00:00:00+03:00 format
 }
 
 // Get credentials from env
@@ -54,19 +67,20 @@ async function getTgt(): Promise<string> {
   });
 
   if (!response.ok) {
-    throw new Error(`EPİAŞ auth failed: ${response.status}`);
+    const errorText = await response.text();
+    throw new Error(`EPİAŞ auth failed: ${response.status} - ${errorText}`);
   }
 
   const token = await response.text();
 
   if (!token.startsWith("TGT-")) {
-    throw new Error(`Invalid TGT format: ${token.slice(0, 50)}`);
+    throw new Error(`Invalid TGT format: ${token.slice(0, 100)}`);
   }
 
-  // Cache for 8 hours (EPİAŞ TGT typically valid for 8h)
+  // Cache for 2 hours (EPİAŞ TGT valid for 2h according to docs)
   cachedTgt = {
     token: token.trim(),
-    expiresAt: Date.now() + 8 * 60 * 60 * 1000,
+    expiresAt: Date.now() + 2 * 60 * 60 * 1000,
   };
 
   return cachedTgt.token;
@@ -83,25 +97,54 @@ async function authenticatedPost<T>(url: string, body: unknown): Promise<T> {
   });
 }
 
-// Format date for EPİAŞ API
-function formatDate(date: Date): string {
-  return date.toISOString().split("T")[0];
+// Format date for EPİAŞ API (ISO 8601 with Turkey timezone)
+function formatDateForEpias(date: Date): string {
+  // Format: 2023-01-01T00:00:00+03:00
+  const pad = (n: number) => n.toString().padStart(2, "0");
+
+  const year = date.getFullYear();
+  const month = pad(date.getMonth() + 1);
+  const day = pad(date.getDate());
+  const hours = pad(date.getHours());
+  const minutes = pad(date.getMinutes());
+  const seconds = pad(date.getSeconds());
+
+  // Turkey timezone is +03:00
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}+03:00`;
 }
 
-// Fetch UECM (hourly consumption) data
+// Fetch Real-Time Consumption data (2 saat gecikmeli yayınlanır)
+// Endpoint: POST /v1/consumption/data/realtime-consumption
 export async function getUecm(
   startDate: Date,
   endDate: Date
-): Promise<UecmResponse> {
-  const request: UecmRequest = {
-    startDate: formatDate(startDate),
-    endDate: formatDate(endDate),
+): Promise<ConsumptionResponse> {
+  const request: ConsumptionRequest = {
+    startDate: formatDateForEpias(startDate),
+    endDate: formatDateForEpias(endDate),
   };
 
-  return authenticatedPost<UecmResponse>(
-    `${EPIAS_BASE_URL}/consumption/data/uecm`,
+  const apiResponse = await authenticatedPost<RealTimeConsumptionApiResponse>(
+    `${EPIAS_BASE_URL}/consumption/data/realtime-consumption`,
     request
   );
+
+  // Handle case where items might be undefined or null
+  if (!apiResponse.items || !Array.isArray(apiResponse.items)) {
+    return { items: [] };
+  }
+
+  // Transform API response to our format
+  const items = apiResponse.items.map((item) => {
+    const dateObj = new Date(item.date);
+    return {
+      date: dateObj.toISOString().split("T")[0], // YYYY-MM-DD
+      hour: dateObj.getHours(),
+      consumption: item.consumption,
+    };
+  });
+
+  return { items };
 }
 
 // Get lag values for prediction (1h, 24h, 168h ago)
@@ -126,7 +169,7 @@ export async function getLagValues(targetDatetime: Date): Promise<{
   // Find matching hours
   const findValue = (target: Date): number => {
     const targetHour = target.getHours();
-    const targetDay = formatDate(target);
+    const targetDay = target.toISOString().split("T")[0];
 
     const item = data.items.find(
       (i) => i.date === targetDay && i.hour === targetHour
