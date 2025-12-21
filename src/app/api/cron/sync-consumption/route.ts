@@ -4,17 +4,14 @@
 import { NextResponse } from "next/server";
 import { syncFromEpias } from "@/features/consumption";
 
-// Vercel cron secret for security
+// Cron secret for security
 const CRON_SECRET = process.env.CRON_SECRET;
-const isDev = process.env.NODE_ENV === "development";
 
 export async function GET(request: Request) {
-  // Skip auth in development mode
-  if (!isDev) {
-    const authHeader = request.headers.get("authorization");
-    if (authHeader !== `Bearer ${CRON_SECRET}`) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  // Verify cron secret
+  const authHeader = request.headers.get("authorization");
+  if (authHeader !== `Bearer ${CRON_SECRET}`) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
