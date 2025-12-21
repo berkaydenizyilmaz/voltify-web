@@ -1,57 +1,72 @@
-import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 const MODELS = [
   {
-    name: 'CatBoost',
-    id: 'catboost',
-    description: 'Gradient boosting algoritması, kategorik değişkenleri native olarak destekler',
-    r2: 0.9972,
-    mae: 456,
-    rmse: 623,
-    features: 20,
+    name: "CatBoost",
+    id: "catboost",
+    description:
+      "Gradient boosting algoritması, kategorik değişkenleri native olarak destekler",
+    r2: 0.9969,
+    mae: 207,
+    rmse: 273,
+    mape: 0.54,
     isDefault: true,
   },
   {
-    name: 'LightGBM',
-    id: 'lightgbm',
-    description: 'Microsoft tarafından geliştirilen hızlı gradient boosting framework',
-    r2: 0.9968,
-    mae: 489,
-    rmse: 658,
-    features: 20,
+    name: "LightGBM",
+    id: "lightgbm",
+    description:
+      "Microsoft tarafından geliştirilen hızlı gradient boosting framework",
+    r2: 0.9956,
+    mae: 242,
+    rmse: 326,
+    mape: 0.63,
     isDefault: false,
   },
   {
-    name: 'XGBoost',
-    id: 'xgboost',
-    description: 'Extreme Gradient Boosting, yaygın kullanılan ensemble yöntemi',
-    r2: 0.9965,
-    mae: 512,
-    rmse: 687,
-    features: 20,
+    name: "XGBoost",
+    id: "xgboost",
+    description:
+      "Extreme Gradient Boosting, yaygın kullanılan ensemble yöntemi",
+    r2: 0.9955,
+    mae: 247,
+    rmse: 326,
+    mape: 0.65,
     isDefault: false,
   },
-]
+];
 
 const FEATURES = [
-  { name: 'temperature_2m', description: 'Sıcaklık (2m)', category: 'Hava' },
-  { name: 'apparent_temperature', description: 'Hissedilen sıcaklık', category: 'Hava' },
-  { name: 'relative_humidity_2m', description: 'Bağıl nem', category: 'Hava' },
-  { name: 'precipitation', description: 'Yağış miktarı', category: 'Hava' },
-  { name: 'wind_speed_10m', description: 'Rüzgar hızı', category: 'Hava' },
-  { name: 'shortwave_radiation', description: 'Kısa dalga ışınımı', category: 'Hava' },
-  { name: 'weather_code', description: 'Hava durumu kodu', category: 'Hava' },
-  { name: 'hour_sin/cos', description: 'Saat (cyclical)', category: 'Zaman' },
-  { name: 'day_of_week_sin/cos', description: 'Haftanın günü (cyclical)', category: 'Zaman' },
-  { name: 'is_weekend', description: 'Hafta sonu mu?', category: 'Zaman' },
-  { name: 'is_holiday', description: 'Tatil günü mü?', category: 'Zaman' },
-  { name: 'HDD', description: 'Isıtma derece günü', category: 'Türetilmiş' },
-  { name: 'CDD', description: 'Soğutma derece günü', category: 'Türetilmiş' },
-  { name: 'lag_1h', description: '1 saat önceki tüketim', category: 'Lag' },
-  { name: 'lag_24h', description: '24 saat önceki tüketim', category: 'Lag' },
-  { name: 'lag_168h', description: '1 hafta önceki tüketim', category: 'Lag' },
-]
+  { name: "temperature_2m", description: "Sıcaklık (2m)", category: "Hava" },
+  {
+    name: "apparent_temperature",
+    description: "Hissedilen sıcaklık",
+    category: "Hava",
+  },
+  { name: "relative_humidity_2m", description: "Bağıl nem", category: "Hava" },
+  { name: "precipitation", description: "Yağış miktarı", category: "Hava" },
+  { name: "wind_speed_10m", description: "Rüzgar hızı", category: "Hava" },
+  {
+    name: "shortwave_radiation",
+    description: "Kısa dalga ışınımı",
+    category: "Hava",
+  },
+  { name: "weather_code", description: "Hava durumu kodu", category: "Hava" },
+  { name: "hour_sin/cos", description: "Saat (cyclical)", category: "Zaman" },
+  {
+    name: "day_of_week_sin/cos",
+    description: "Haftanın günü (cyclical)",
+    category: "Zaman",
+  },
+  { name: "is_weekend", description: "Hafta sonu mu?", category: "Zaman" },
+  { name: "is_holiday", description: "Tatil günü mü?", category: "Zaman" },
+  { name: "HDD", description: "Isıtma derece günü", category: "Türetilmiş" },
+  { name: "CDD", description: "Soğutma derece günü", category: "Türetilmiş" },
+  { name: "lag_1h", description: "1 saat önceki tüketim", category: "Lag" },
+  { name: "lag_24h", description: "24 saat önceki tüketim", category: "Lag" },
+  { name: "lag_168h", description: "1 hafta önceki tüketim", category: "Lag" },
+];
 
 export default function ModellerPage() {
   return (
@@ -88,8 +103,8 @@ export default function ModellerPage() {
                 <span className="font-mono font-medium">{model.rmse}</span>
               </div>
               <div>
-                <span className="text-muted-foreground">Features: </span>
-                <span className="font-mono font-medium">{model.features}</span>
+                <span className="text-muted-foreground">MAPE: </span>
+                <span className="font-mono font-medium">{model.mape}</span>
               </div>
             </div>
           </Card>
@@ -134,5 +149,5 @@ export default function ModellerPage() {
         </div>
       </Card>
     </div>
-  )
+  );
 }
