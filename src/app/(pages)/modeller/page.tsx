@@ -300,6 +300,60 @@ export default function ModellerPage() {
         </Card>
       </div>
 
+      {/* Feature Importance Interpretation */}
+      <Card className="p-6 bg-linear-to-br from-blue-50/50 to-purple-50/50 dark:from-blue-950/20 dark:to-purple-950/20 border-blue-200 dark:border-blue-800">
+        <div className="flex gap-4">
+          <div className="shrink-0">
+            <HugeiconsIcon
+              icon={ChartHistogramIcon}
+              size={24}
+              className="text-blue-600 dark:text-blue-400"
+            />
+          </div>
+          <div className="space-y-3">
+            <h3 className="font-semibold text-lg">
+              📊 Feature Importance Yorumu
+            </h3>
+            <div className="space-y-2 text-sm text-muted-foreground">
+              <p>
+                <strong className="text-foreground">
+                  Lag Features&apos;ın Yüksek Önemi (%76.1):
+                </strong>{" "}
+                Türkiye elektrik talebinin{" "}
+                <span className="text-blue-600 dark:text-blue-400 font-medium">
+                  son derece istikrarlı ve tahmin edilebilir
+                </span>{" "}
+                olduğunu gösterir. Geçmiş tüketim değerleri, gelecek tüketimi
+                tahmin etmek için en güçlü göstergedir.
+              </p>
+              <p>
+                <strong className="text-foreground">
+                  Hava Durumu ve Sıcaklık (%5.9):
+                </strong>{" "}
+                Elektrik talebi üzerinde &quot;fine-tuning&quot; etkisi yapar.
+                Türkiye&apos;de enerji tüketimi{" "}
+                <span className="text-foreground font-medium">
+                  mevsimsel ve saatlik döngülere
+                </span>{" "}
+                sıkı sıkıya bağlıdır.
+              </p>
+              <p className="pt-2 border-t border-blue-200 dark:border-blue-800">
+                <strong className="text-amber-600 dark:text-amber-400">
+                  ⚠️ Dikkat:
+                </strong>{" "}
+                Yüksek lag dependency, modelin <strong>ekstrem olaylara</strong>{" "}
+                (ani sıcaklık dalgaları, enerji krizi) karşı kör kalabileceği
+                anlamına gelir. Gerçek dünya uygulamalarında{" "}
+                <span className="text-foreground font-medium">
+                  hibrit yaklaşım
+                </span>{" "}
+                (fizik-tabanlı + ML) daha robust sonuçlar verir.
+              </p>
+            </div>
+          </div>
+        </div>
+      </Card>
+
       {/* Model Details Cards */}
       <h2 className="text-2xl font-bold mt-8">
         Algoritma Performans Detayları
