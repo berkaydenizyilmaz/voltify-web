@@ -4,10 +4,11 @@ import { consumption } from "@/lib/data";
 import { getUecm } from "@/lib/services";
 
 // Sync consumption data from EPİAŞ to DB
-// EPİAŞ Gerçek Zamanlı Tüketim verisi 2 saat gecikmeli yayınlanır
-export async function syncFromEpias(hoursBack: number = 48): Promise<number> {
+// EPİAŞ data is ~2 hours delayed
+// Called hourly, so we fetch last 4 hours to catch any missed data
+export async function syncFromEpias(): Promise<number> {
   const endDate = new Date();
-  const startDate = new Date(endDate.getTime() - hoursBack * 60 * 60 * 1000);
+  const startDate = new Date(endDate.getTime() - 4 * 60 * 60 * 1000); // 4 hours back
 
   // Fetch from EPİAŞ
   const data = await getUecm(startDate, endDate);
@@ -15,12 +16,8 @@ export async function syncFromEpias(hoursBack: number = 48): Promise<number> {
   let syncedCount = 0;
 
   for (const item of data.items) {
-    // Parse EPİAŞ date format and hour
-    const datetime = new Date(item.date);
-    datetime.setHours(item.hour, 0, 0, 0);
-
     // Upsert to DB
-    await consumption.upsert(datetime, item.consumption);
+    await consumption.upsert(item.datetime, item.consumption);
     syncedCount++;
   }
 

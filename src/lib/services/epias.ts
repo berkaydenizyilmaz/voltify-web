@@ -10,12 +10,11 @@ const EPIAS_AUTH_URL = "https://giris.epias.com.tr/cas/v1/tickets";
 let cachedTgt: { token: string; expiresAt: number } | null = null;
 
 // API Response structure - Gerçek Zamanlı Tüketim (Real Time Consumption)
-// Endpoint: POST /v1/consumption/data/realtime-consumption
 interface RealTimeConsumptionApiResponse {
   items: Array<{
-    consumption: number; // Tüketim Miktarı (MWh)
-    date: string; // date-time format
-    time: string; // time string
+    consumption: number;
+    date: string;
+    time: string;
   }>;
   page: unknown;
   statistics: unknown;
@@ -24,15 +23,14 @@ interface RealTimeConsumptionApiResponse {
 // Normalized response for our app
 interface ConsumptionResponse {
   items: Array<{
-    date: string; // YYYY-MM-DD
-    hour: number;
+    datetime: Date;
     consumption: number; // MWh
   }>;
 }
 
 interface ConsumptionRequest {
-  startDate: string; // 2023-01-01T00:00:00+03:00 format
-  endDate: string; // 2023-01-01T00:00:00+03:00 format
+  startDate: string;
+  endDate: string;
 }
 
 // Get credentials from env
@@ -97,9 +95,8 @@ async function authenticatedPost<T>(url: string, body: unknown): Promise<T> {
   });
 }
 
-// Format date for EPİAŞ API (ISO 8601 with Turkey timezone)
+// Format date for EPİAŞ API
 function formatDateForEpias(date: Date): string {
-  // Format: 2023-01-01T00:00:00+03:00
   const pad = (n: number) => n.toString().padStart(2, "0");
 
   const year = date.getFullYear();
@@ -114,7 +111,6 @@ function formatDateForEpias(date: Date): string {
 }
 
 // Fetch Real-Time Consumption data (2 saat gecikmeli yayınlanır)
-// Endpoint: POST /v1/consumption/data/realtime-consumption
 export async function getUecm(
   startDate: Date,
   endDate: Date
@@ -135,14 +131,10 @@ export async function getUecm(
   }
 
   // Transform API response to our format
-  const items = apiResponse.items.map((item) => {
-    const dateObj = new Date(item.date);
-    return {
-      date: dateObj.toISOString().split("T")[0], // YYYY-MM-DD
-      hour: dateObj.getHours(),
-      consumption: item.consumption,
-    };
-  });
+  const items = apiResponse.items.map((item) => ({
+    datetime: new Date(item.date),
+    consumption: item.consumption,
+  }));
 
   return { items };
 }
@@ -168,12 +160,15 @@ export async function getLagValues(targetDatetime: Date): Promise<{
 
   // Find matching hours
   const findValue = (target: Date): number => {
-    const targetHour = target.getHours();
-    const targetDay = target.toISOString().split("T")[0];
+    // Round to hour for comparison
+    const targetHourStart = new Date(target);
+    targetHourStart.setMinutes(0, 0, 0);
 
-    const item = data.items.find(
-      (i) => i.date === targetDay && i.hour === targetHour
-    );
+    const item = data.items.find((i) => {
+      const itemTime = new Date(i.datetime);
+      itemTime.setMinutes(0, 0, 0);
+      return itemTime.getTime() === targetHourStart.getTime();
+    });
     return item?.consumption ?? 0;
   };
 
