@@ -15,7 +15,7 @@ export type SimulationInput = z.infer<typeof simulationInputSchema>
 export type GetPredictionByDateInput = z.infer<typeof getPredictionByDateSchema>
 
 // Weather data (from Open-Meteo)
-export interface WeatherSnapshot {
+export type WeatherSnapshot = {
   temperature_2m: number
   apparent_temperature: number
   relative_humidity_2m: number

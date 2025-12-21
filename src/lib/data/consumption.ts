@@ -1,7 +1,7 @@
 // Actual Consumption DAL
 
 import prisma from '@/lib/db'
-import type { Prisma } from '@/app/generated/prisma'
+import type { Prisma } from '@/app/generated/prisma/client'
 
 export type ConsumptionCreate = Prisma.ActualConsumptionCreateInput
 export type ConsumptionWhere = Prisma.ActualConsumptionWhereInput

@@ -1,7 +1,7 @@
 // Prediction DAL
 
 import prisma from '@/lib/db'
-import type { Prisma } from '@/app/generated/prisma'
+import type { Prisma } from '@/app/generated/prisma/client'
 
 export type PredictionCreate = Prisma.PredictionCreateInput
 export type PredictionWhere = Prisma.PredictionWhereInput

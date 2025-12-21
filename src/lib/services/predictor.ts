@@ -42,7 +42,7 @@ interface ModelsResponse {
 // Make a prediction using FastAPI
 export async function predict(
   datetime: Date,
-  weather: WeatherData,
+  weather: Omit<WeatherData, 'datetime'>,
   lags: LagData,
   model: ModelName = 'catboost'
 ): Promise<PredictionResponse> {
