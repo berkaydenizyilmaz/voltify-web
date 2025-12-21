@@ -30,37 +30,37 @@ import {
 const MODELS_DATA = [
   {
     name: "CatBoost",
-    MAE: 206.67,
-    RMSE: 272.67,
-    R2: 99.69,
-    MAPE: 0.54,
+    MAE: 194.74,
+    RMSE: 261.69,
+    R2: 99.71,
+    MAPE: 0.51,
     fill: "#8884d8",
   },
   {
     name: "LightGBM",
-    MAE: 242.2,
-    RMSE: 325.61,
-    R2: 99.56,
-    MAPE: 0.63,
+    MAE: 200.96,
+    RMSE: 271.18,
+    R2: 99.69,
+    MAPE: 0.53,
     fill: "#82ca9d",
   },
   {
     name: "XGBoost",
-    MAE: 246.96,
-    RMSE: 326.38,
-    R2: 99.55,
-    MAPE: 0.65,
+    MAE: 213.54,
+    RMSE: 284.06,
+    R2: 99.66,
+    MAPE: 0.56,
     fill: "#ffc658",
   },
 ];
 
-// Feature Importance (Temsili - Gerçek modelden alınabilir ama mantıksal sıralama bu şekildedir genelde)
+// Feature Importance (CatBoost Model - Gerçek Değerler)
 const FEATURE_IMPORTANCE = [
-  { feature: "Lag (Geçmiş Tüketim)", importance: 45 },
-  { feature: "Sıcaklık & Hava", importance: 25 },
-  { feature: "Saat/Gün Döngüsü", importance: 15 },
-  { feature: "Takvim (Tatil/Haftasonu)", importance: 10 },
-  { feature: "HDD/CDD", importance: 5 },
+  { feature: "Lag Features", importance: 76.1 },
+  { feature: "Zaman Kodlaması", importance: 14.9 },
+  { feature: "Hava & Sıcaklık", importance: 5.9 },
+  { feature: "Takvim", importance: 2.6 },
+  { feature: "HDD/CDD", importance: 0.5 },
 ];
 
 const FEATURES_LIST = [
@@ -146,6 +146,64 @@ export default function ModellerPage() {
           Kullanılan algoritmalar, performans metrikleri ve özellik mühendisliği
           (Feature Engineering) detayları.
         </p>
+      </div>
+
+      {/* Training Dataset Stats */}
+      <div className="grid gap-4 md:grid-cols-4">
+        <Card className="p-4">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground">Toplam Veri</p>
+              <p className="text-2xl font-bold mt-1">17,376 saat</p>
+              <p className="text-xs text-muted-foreground mt-1">~2 yıl</p>
+            </div>
+            <HugeiconsIcon icon={CpuIcon} size={20} className="text-primary" />
+          </div>
+        </Card>
+        <Card className="p-4">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground">Eğitim Seti</p>
+              <p className="text-2xl font-bold mt-1">16,656 saat</p>
+              <p className="text-xs text-muted-foreground mt-1">~23 ay (%96)</p>
+            </div>
+            <HugeiconsIcon
+              icon={FlashIcon}
+              size={20}
+              className="text-green-500"
+            />
+          </div>
+        </Card>
+        <Card className="p-4">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground">Test Seti</p>
+              <p className="text-2xl font-bold mt-1">720 saat</p>
+              <p className="text-xs text-muted-foreground mt-1">30 gün (%4)</p>
+            </div>
+            <HugeiconsIcon
+              icon={AnalysisTextLinkIcon}
+              size={20}
+              className="text-blue-500"
+            />
+          </div>
+        </Card>
+        <Card className="p-4">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground">Özellik Sayısı</p>
+              <p className="text-2xl font-bold mt-1">20</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Feature engineering
+              </p>
+            </div>
+            <HugeiconsIcon
+              icon={Settings01Icon}
+              size={20}
+              className="text-orange-500"
+            />
+          </div>
+        </Card>
       </div>
 
       {/* Model Performance Comparison Section */}
