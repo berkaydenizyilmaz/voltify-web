@@ -139,46 +139,6 @@ export async function getUecm(
   return { items };
 }
 
-// Get lag values for prediction (1h, 24h, 168h ago)
-export async function getLagValues(targetDatetime: Date): Promise<{
-  lag_1h: number;
-  lag_24h: number;
-  lag_168h: number;
-}> {
-  const lag1h = new Date(targetDatetime.getTime() - 1 * 60 * 60 * 1000);
-  const lag24h = new Date(targetDatetime.getTime() - 24 * 60 * 60 * 1000);
-  const lag168h = new Date(targetDatetime.getTime() - 168 * 60 * 60 * 1000);
-
-  // Fetch range covering all lags
-  const startDate = new Date(lag168h);
-  startDate.setHours(0, 0, 0, 0);
-
-  const endDate = new Date(lag1h);
-  endDate.setHours(23, 59, 59, 999);
-
-  const data = await getUecm(startDate, endDate);
-
-  // Find matching hours
-  const findValue = (target: Date): number => {
-    // Round to hour for comparison
-    const targetHourStart = new Date(target);
-    targetHourStart.setMinutes(0, 0, 0);
-
-    const item = data.items.find((i) => {
-      const itemTime = new Date(i.datetime);
-      itemTime.setMinutes(0, 0, 0);
-      return itemTime.getTime() === targetHourStart.getTime();
-    });
-    return item?.consumption ?? 0;
-  };
-
-  return {
-    lag_1h: findValue(lag1h),
-    lag_24h: findValue(lag24h),
-    lag_168h: findValue(lag168h),
-  };
-}
-
 // Clear TGT cache (for testing or forced refresh)
 export function clearTgtCache(): void {
   cachedTgt = null;

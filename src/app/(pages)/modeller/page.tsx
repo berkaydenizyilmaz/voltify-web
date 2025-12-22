@@ -30,37 +30,35 @@ import {
 const MODELS_DATA = [
   {
     name: "CatBoost",
-    MAE: 194.74,
-    RMSE: 261.69,
-    R2: 99.71,
-    MAPE: 0.51,
+    MAE: 519.44,
+    RMSE: 644.75,
+    R2: 98.26,
+    MAPE: 1.37,
     fill: "#8884d8",
   },
   {
     name: "LightGBM",
-    MAE: 200.96,
-    RMSE: 271.18,
-    R2: 99.69,
-    MAPE: 0.53,
+    MAE: 555.17,
+    RMSE: 688.22,
+    R2: 98.02,
+    MAPE: 1.46,
     fill: "#82ca9d",
   },
   {
     name: "XGBoost",
-    MAE: 213.54,
-    RMSE: 284.06,
-    R2: 99.66,
-    MAPE: 0.56,
+    MAE: 583.26,
+    RMSE: 721.12,
+    R2: 97.83,
+    MAPE: 1.53,
     fill: "#ffc658",
   },
 ];
 
-// Feature Importance (CatBoost Model - Gerçek Değerler)
 const FEATURE_IMPORTANCE = [
-  { feature: "Lag Features", importance: 76.1 },
-  { feature: "Zaman Kodlaması", importance: 14.9 },
-  { feature: "Hava & Sıcaklık", importance: 5.9 },
-  { feature: "Takvim", importance: 2.6 },
-  { feature: "HDD/CDD", importance: 0.5 },
+  { feature: "Zaman Kodlaması", importance: 69.2 },
+  { feature: "Takvim", importance: 12.8 },
+  { feature: "Hava & Sıcaklık", importance: 12.4 },
+  { feature: "HDD/CDD", importance: 5.6 },
 ];
 
 const FEATURES_LIST = [
@@ -84,15 +82,6 @@ const FEATURES_LIST = [
       "Hour Sin/Cos (Günün saati)",
       "Day of Week Sin/Cos (Haftanın günü)",
       "Day of Year Sin/Cos (Yılın günü/Mevsimsellik)",
-    ],
-  },
-  {
-    category: "Gecikmeli Değişkenler (Lag Features)",
-    desc: "Zaman serisindeki otokorelasyonu yakalamak için geçmiş değerler özellik olarak eklendi.",
-    items: [
-      "Lag 1h (1 saat önceki talep)",
-      "Lag 24h (1 gün önceki talep)",
-      "Lag 168h (1 hafta önceki talep)",
     ],
   },
   {
@@ -317,37 +306,22 @@ export default function ModellerPage() {
             <div className="space-y-2 text-sm text-muted-foreground">
               <p>
                 <strong className="text-foreground">
-                  Lag Features&apos;ın Yüksek Önemi (%76.1):
+                  Zaman Kodlaması (%69.2):
                 </strong>{" "}
-                Türkiye elektrik talebinin{" "}
+                Elektrik talebi{" "}
                 <span className="text-blue-600 dark:text-blue-400 font-medium">
-                  son derece istikrarlı ve tahmin edilebilir
+                  güçlü zamansal pattern&apos;lere
                 </span>{" "}
-                olduğunu gösterir. Geçmiş tüketim değerleri, gelecek tüketimi
-                tahmin etmek için en güçlü göstergedir.
+                sahiptir. Saat, gün ve mevsim bilgisi tahmin için en kritik
+                faktördür.
               </p>
               <p>
                 <strong className="text-foreground">
-                  Hava Durumu ve Sıcaklık (%5.9):
+                  Takvim & Hava (%25.2):
                 </strong>{" "}
-                Elektrik talebi üzerinde &quot;fine-tuning&quot; etkisi yapar.
-                Türkiye&apos;de enerji tüketimi{" "}
-                <span className="text-foreground font-medium">
-                  mevsimsel ve saatlik döngülere
-                </span>{" "}
-                sıkı sıkıya bağlıdır.
-              </p>
-              <p className="pt-2 border-t border-blue-200 dark:border-blue-800">
-                <strong className="text-amber-600 dark:text-amber-400">
-                  ⚠️ Dikkat:
-                </strong>{" "}
-                Yüksek lag dependency, modelin <strong>ekstrem olaylara</strong>{" "}
-                (ani sıcaklık dalgaları, enerji krizi) karşı kör kalabileceği
-                anlamına gelir. Gerçek dünya uygulamalarında{" "}
-                <span className="text-foreground font-medium">
-                  hibrit yaklaşım
-                </span>{" "}
-                (fizik-tabanlı + ML) daha robust sonuçlar verir.
+                Tatil günleri, hafta sonları ve meteorolojik koşullar talebi
+                önemli ölçüde etkiler. HDD/CDD gibi türetilmiş özellikler iklim
+                etkisini modelliyor.
               </p>
             </div>
           </div>

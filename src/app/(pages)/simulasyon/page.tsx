@@ -65,11 +65,6 @@ export default function SimulasyonPage() {
           parseFloat(formData.get("radiation") as string) || 200,
         weather_code: parseInt(formData.get("weather_code") as string) || 0,
       },
-      lags: {
-        lag_1h: parseFloat(formData.get("lag_1h") as string) || 35000,
-        lag_24h: parseFloat(formData.get("lag_24h") as string) || 35000,
-        lag_168h: parseFloat(formData.get("lag_168h") as string) || 35000,
-      },
     });
   }
 
@@ -207,45 +202,6 @@ export default function SimulasyonPage() {
                     type="number"
                     min="0"
                     defaultValue="0"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="mb-2 text-sm font-medium">Geçmiş Tüketim (MWh)</h3>
-              <div className="grid gap-3 sm:grid-cols-3">
-                <div className="space-y-1">
-                  <Label htmlFor="lag_1h" className="text-xs">
-                    1 Saat Önce
-                  </Label>
-                  <Input
-                    id="lag_1h"
-                    name="lag_1h"
-                    type="number"
-                    defaultValue="35000"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="lag_24h" className="text-xs">
-                    24 Saat Önce
-                  </Label>
-                  <Input
-                    id="lag_24h"
-                    name="lag_24h"
-                    type="number"
-                    defaultValue="35000"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="lag_168h" className="text-xs">
-                    1 Hafta Önce
-                  </Label>
-                  <Input
-                    id="lag_168h"
-                    name="lag_168h"
-                    type="number"
-                    defaultValue="35000"
                   />
                 </div>
               </div>

@@ -45,33 +45,6 @@ export async function getOne(datetime: Date) {
   });
 }
 
-// Get lag values for prediction (1h, 24h, 168h ago)
-// Uses forward-fill strategy: if exact lag not found, use most recent known value
-export async function getLags(targetDatetime: Date) {
-  const lag1h = new Date(targetDatetime.getTime() - 1 * 60 * 60 * 1000);
-  const lag24h = new Date(targetDatetime.getTime() - 24 * 60 * 60 * 1000);
-  const lag168h = new Date(targetDatetime.getTime() - 168 * 60 * 60 * 1000);
-
-  const [val1h, val24h, val168h] = await Promise.all([
-    getOne(lag1h),
-    getOne(lag24h),
-    getOne(lag168h),
-  ]);
-
-  // If lag values not found, use most recent known consumption (forward fill)
-  let fallback: number | null = null;
-  if (!val1h || !val24h || !val168h) {
-    const latest = await getLatest(1);
-    fallback = latest[0]?.value ?? 35000; // Default to ~35GWh if no data
-  }
-
-  return {
-    lag_1h: val1h?.value ?? fallback ?? 35000,
-    lag_24h: val24h?.value ?? fallback ?? 35000,
-    lag_168h: val168h?.value ?? fallback ?? 35000,
-  };
-}
-
 // Get latest N records
 export async function getLatest(limit: number = 24) {
   return prisma.actualConsumption.findMany({

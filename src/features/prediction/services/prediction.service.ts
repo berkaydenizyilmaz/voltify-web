@@ -10,8 +10,6 @@ import type {
   HourlyForecast,
 } from "../types";
 
-// Generate predictions for next 168 hours (7 days) starting from current hour
-// Uses iterative forecasting: previous predictions become lags for future predictions
 export async function generatePredictions(
   hours: number = 168,
   model: ModelName = "catboost"
@@ -20,41 +18,12 @@ export async function generatePredictions(
   const weatherData = await getWeatherForecast(hours);
 
   const results: PredictionResult[] = [];
-  const previousPredictions: number[] = []; // Store predictions for use as lags
 
-  for (let i = 0; i < weatherData.length; i++) {
-    const weather = weatherData[i];
+  for (const weather of weatherData) {
     const datetime = new Date(weather.datetime);
 
-    // Get base lag values from DB (for hours where real data exists)
-    const baseLags = await consumption.getLags(datetime);
-
-    // Build lags using iterative strategy
-    const lags = {
-      // lag_1h: Use previous prediction if hour > 2, else use real data
-      lag_1h:
-        i >= 3 && previousPredictions[i - 1]
-          ? previousPredictions[i - 1]
-          : baseLags.lag_1h,
-
-      // lag_24h: Use prediction from 24 hours ago if available, else real data
-      lag_24h:
-        i >= 24 && previousPredictions[i - 24]
-          ? previousPredictions[i - 24]
-          : baseLags.lag_24h,
-
-      // lag_168h: Use prediction from 168 hours ago if available, else real data
-      lag_168h:
-        i >= 168 && previousPredictions[i - 168]
-          ? previousPredictions[i - 168]
-          : baseLags.lag_168h,
-    };
-
     // Call FastAPI predictor
-    const response = await callPredictor(datetime, weather, lags, model);
-
-    // Store this prediction for future iterations
-    previousPredictions[i] = response.prediction;
+    const response = await callPredictor(datetime, weather, model);
 
     const weatherSnapshot: WeatherSnapshot = {
       temperature_2m: weather.temperature_2m,
@@ -83,14 +52,12 @@ export async function generatePredictions(
   return results;
 }
 
-// Run simulation with custom inputs
 export async function runSimulation(
   input: SimulationInput
 ): Promise<PredictionResult> {
   const response = await callPredictor(
     input.datetime,
     input.weather,
-    input.lags,
     input.model
   );
 
