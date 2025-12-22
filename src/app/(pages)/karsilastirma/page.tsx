@@ -13,6 +13,8 @@ import { getPredictionsByRange } from "@/features/prediction/services";
 import { getConsumptionByRange } from "@/features/consumption/services";
 import { ComparisonChart } from "./comparison-chart";
 
+export const dynamic = "force-dynamic";
+
 async function getComparisonData() {
   try {
     const endDate = new Date();
