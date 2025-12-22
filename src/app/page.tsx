@@ -16,6 +16,8 @@ import { getLatestPredictions } from "@/features/prediction/services";
 import { getStats } from "@/features/consumption/services";
 import { predictions } from "@/lib/data";
 
+export const dynamic = "force-dynamic";
+
 async function getDashboardData() {
   try {
     const [predictionsList, stats, totalPredictions] = await Promise.all([
