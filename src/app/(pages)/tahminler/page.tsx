@@ -10,6 +10,8 @@ import {
 import { getLatestPredictions } from "@/features/prediction/services";
 import { PredictionsChart } from "./predictions-chart";
 
+export const dynamic = "force-dynamic";
+
 async function getPredictions() {
   try {
     return await getLatestPredictions(168);
@@ -161,7 +163,8 @@ export default async function TahminlerPage() {
           />
           <h3 className="text-lg font-medium">Henüz tahmin verisi yok</h3>
           <p className="text-sm text-muted-foreground mt-1">
-            Tahmin üretmek için /api/cron/sync-predictions endpoint&apos;ini çağırın
+            Tahmin üretmek için /api/cron/sync-predictions endpoint&apos;ini
+            çağırın
           </p>
         </Card>
       ) : (
