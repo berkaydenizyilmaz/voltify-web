@@ -89,12 +89,6 @@ export default function HakkindaPage() {
                 >
                   Gerçek Zamanlı Tüketim
                 </Badge>
-                <Badge
-                  variant="outline"
-                  className="border-orange-500/20 text-orange-600 bg-orange-500/5"
-                >
-                  UEÇM
-                </Badge>
               </div>
             </div>
           </div>

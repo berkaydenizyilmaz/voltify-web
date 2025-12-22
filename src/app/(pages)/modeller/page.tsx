@@ -181,7 +181,7 @@ export default function ModellerPage() {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Özellik Sayısı</p>
-              <p className="text-2xl font-bold mt-1">20</p>
+              <p className="text-2xl font-bold mt-1">17</p>
               <p className="text-xs text-muted-foreground mt-1">
                 Feature engineering
               </p>
