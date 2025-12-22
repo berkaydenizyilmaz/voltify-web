@@ -328,6 +328,90 @@ export default function ModellerPage() {
         </div>
       </Card>
 
+      {/* Technical Details Section */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* Training Process */}
+        <Card className="p-6">
+          <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+            <HugeiconsIcon icon={CpuIcon} size={20} className="text-primary" />
+            Model Eğitim Süreci
+          </h3>
+          <div className="space-y-3 text-sm">
+            <div className="flex gap-2">
+              <span className="font-medium min-w-[140px]">Veri Ayrımı:</span>
+              <span className="text-muted-foreground">
+                %96 eğitim (16,656 saat), %4 test (720 saat / 30 gün)
+              </span>
+            </div>
+            <div className="flex gap-2">
+              <span className="font-medium min-w-[140px]">Algoritma:</span>
+              <span className="text-muted-foreground">
+                Gradient Boosting (CatBoost, LightGBM, XGBoost)
+              </span>
+            </div>
+            <div className="flex gap-2">
+              <span className="font-medium min-w-[140px]">
+                Hiperparametreler:
+              </span>
+              <span className="text-muted-foreground">
+                1000 iterasyon, learning_rate=0.1, max_depth=8
+              </span>
+            </div>
+            <div className="flex gap-2">
+              <span className="font-medium min-w-[140px]">Optimizasyon:</span>
+              <span className="text-muted-foreground">
+                MAE (Mean Absolute Error) minimizasyonu
+              </span>
+            </div>
+            <div className="flex gap-2">
+              <span className="font-medium min-w-[140px]">Değerlendirme:</span>
+              <span className="text-muted-foreground">
+                Son 30 günlük gerçek veriye karşı test edildi
+              </span>
+            </div>
+          </div>
+        </Card>
+
+        {/* Feature Importance Methodology */}
+        <Card className="p-6">
+          <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+            <HugeiconsIcon
+              icon={ChartHistogramIcon}
+              size={20}
+              className="text-primary"
+            />
+            Feature Importance Hesaplama
+          </h3>
+          <div className="space-y-3 text-sm">
+            <div>
+              <p className="font-medium mb-1">
+                CatBoost Gain-Based Importance:
+              </p>
+              <p className="text-muted-foreground">
+                Her özelliğin model dallarında sağladığı{" "}
+                <strong>bilgi kazancı</strong> (information gain) ölçülür.
+                Yüksek gain = daha iyi ayrım.
+              </p>
+            </div>
+            <div className="mt-3 pt-3 border-t">
+              <p className="font-medium mb-1">Hesaplama Mantığı:</p>
+              <p className="text-muted-foreground">
+                Model, her dallanmada hatayı en çok azaltan özelliği seçer.
+                Toplam hata azalması o özelliğin &quot;importance&quot;
+                değeridir.
+              </p>
+            </div>
+            <div className="mt-3 pt-3 border-t">
+              <p className="font-medium mb-1">Normalizasyon:</p>
+              <p className="text-muted-foreground">
+                Tüm özellikler toplamı %100 olacak şekilde normalize edilir.
+                Grafikte gösterilen değerler bu yüzdelik dağılımdır.
+              </p>
+            </div>
+          </div>
+        </Card>
+      </div>
+
       {/* Model Details Cards */}
       <h2 className="text-2xl font-bold mt-8">
         Algoritma Performans Detayları
