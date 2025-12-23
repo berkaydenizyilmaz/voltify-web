@@ -121,13 +121,18 @@ export async function getWeatherForecast(
     });
   }
 
-  // Filter to only future hours (starting from current hour)
+  // Filter to only future hours (starting from current hour in Istanbul time)
+  // Open-Meteo returns Istanbul time, so we need to compare with Istanbul time
   const now = new Date();
-  now.setMinutes(0, 0, 0);
+  // Get current hour in Istanbul timezone
+  const istanbulNow = new Date(
+    now.toLocaleString("en-US", { timeZone: "Europe/Istanbul" })
+  );
+  istanbulNow.setMinutes(0, 0, 0);
 
   const futureWeather = allWeather.filter((w) => {
     const weatherTime = new Date(w.datetime);
-    return weatherTime >= now;
+    return weatherTime >= istanbulNow;
   });
 
   return futureWeather.slice(0, hours);
