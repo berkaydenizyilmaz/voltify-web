@@ -445,7 +445,12 @@ export default function ModellerPage() {
 
       {/* 6. Feature Importance */}
       <div>
-        <h2 className="text-xl font-bold mb-4">🎯 Özellik Önem Dağılımı</h2>
+        <h2 className="text-xl font-bold mb-2">🎯 Özellik Önem Dağılımı</h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          <strong>Gain-based Importance:</strong> Her özelliğin modeldeki
+          dallanmalarda sağladığı toplam hata azalması ölçülür ve %100&apos;e
+          normalize edilir.
+        </p>
         <div className="grid gap-6 lg:grid-cols-2">
           <Card className="p-6">
             <h3 className="font-semibold mb-4">Radar Grafiği</h3>
