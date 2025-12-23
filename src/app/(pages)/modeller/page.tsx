@@ -27,6 +27,7 @@ import {
   Radar,
 } from "recharts";
 
+// Model performans verileri
 const MODELS_DATA = [
   {
     name: "CatBoost",
@@ -34,7 +35,9 @@ const MODELS_DATA = [
     RMSE: 644.75,
     R2: 98.26,
     MAPE: 1.37,
-    fill: "#8884d8",
+    color: "#3b82f6",
+    description:
+      "Kategorik değişkenleri native olarak işleyebilen, Yandex tarafından geliştirilen gradient boosting algoritması.",
   },
   {
     name: "LightGBM",
@@ -42,7 +45,9 @@ const MODELS_DATA = [
     RMSE: 688.22,
     R2: 98.02,
     MAPE: 1.46,
-    fill: "#82ca9d",
+    color: "#22c55e",
+    description:
+      "Microsoft tarafından geliştirilen, yaprak odaklı büyüme (leaf-wise) kullanan hızlı algoritma.",
   },
   {
     name: "XGBoost",
@@ -50,10 +55,13 @@ const MODELS_DATA = [
     RMSE: 721.12,
     R2: 97.83,
     MAPE: 1.53,
-    fill: "#ffc658",
+    color: "#f59e0b",
+    description:
+      "DMLC tarafından geliştirilen, sistem optimizasyonu üzerine kurulu popüler algoritma.",
   },
 ];
 
+// Feature importance verileri
 const FEATURE_IMPORTANCE = [
   { feature: "Zaman Kodlaması", importance: 69.2 },
   { feature: "Takvim", importance: 12.8 },
@@ -61,54 +69,123 @@ const FEATURE_IMPORTANCE = [
   { feature: "HDD/CDD", importance: 5.6 },
 ];
 
-const FEATURES_LIST = [
+// Tüm özellikler (17 adet, lag hariç)
+const FEATURES = [
   {
-    category: "Meteorolojik Değişkenler",
-    desc: "7 farklı şehirden (İstanbul, Ankara, İzmir, Bursa, Antalya, Adana, Konya) nüfus ağırlıklı ortalama ile hesaplanır.",
-    items: [
-      "Sıcaklık (Temperature 2m)",
-      "Hissedilen Sıcaklık (Apparent)",
-      "Bağıl Nem (Humidity)",
-      "Yağış (Precipitation)",
-      "Rüzgar Hızı (Wind Speed 10m)",
-      "Güneş Radyasyonu (Shortwave)",
-      "Hava Durumu Kodu (WMO Code)",
-    ],
+    name: "turkey_temperature_2m",
+    label: "Sıcaklık (2m)",
+    category: "Meteorolojik",
+    description: "7 şehrin nüfus ağırlıklı ortalama hava sıcaklığı (°C)",
   },
   {
-    category: "Zaman Kodlaması (Cyclical Encoding)",
-    desc: "Zamanın döngüsel yapısını (23:00 ile 00:00'ın yakınlığı gibi) modele öğretmek için Trigonometrik Dönüşüm uygulandı.",
-    items: [
-      "Hour Sin/Cos (Günün saati)",
-      "Day of Week Sin/Cos (Haftanın günü)",
-      "Day of Year Sin/Cos (Yılın günü/Mevsimsellik)",
-    ],
+    name: "turkey_apparent_temperature",
+    label: "Hissedilen Sıcaklık",
+    category: "Meteorolojik",
+    description: "Rüzgar ve nem etkisiyle algılanan sıcaklık (°C)",
   },
   {
-    category: "Türetilmiş Özellikler (Domain Features)",
-    desc: "Enerji tüketim karakteristiğine özgü hesaplanan mühendislik özellikleri.",
-    items: [
-      "HDD (Isıtma Derece Günü): 18°C altı",
-      "CDD (Soğutma Derece Günü): 18°C üstü",
-      "Is Weekend (Hafta sonu etkisi)",
-      "Is Holiday (Resmi tatil etkisi)",
-    ],
+    name: "turkey_relative_humidity_2m",
+    label: "Bağıl Nem",
+    category: "Meteorolojik",
+    description: "Havadaki nem oranı (%)",
+  },
+  {
+    name: "turkey_precipitation",
+    label: "Yağış",
+    category: "Meteorolojik",
+    description: "Saatlik yağış miktarı (mm)",
+  },
+  {
+    name: "turkey_wind_speed_10m",
+    label: "Rüzgar Hızı",
+    category: "Meteorolojik",
+    description: "10 metre yükseklikteki rüzgar hızı (km/h)",
+  },
+  {
+    name: "turkey_shortwave_radiation",
+    label: "Güneş Radyasyonu",
+    category: "Meteorolojik",
+    description: "Yüzeye ulaşan kısa dalga radyasyonu (W/m²)",
+  },
+  {
+    name: "turkey_weather_code",
+    label: "Hava Durumu Kodu",
+    category: "Meteorolojik",
+    description: "WMO standart hava durumu kodu (0-99)",
+  },
+  {
+    name: "hour_sin",
+    label: "Saat (Sin)",
+    category: "Zaman Kodlama",
+    description: "Günün saatinin sinüs dönüşümü (döngüsel kodlama)",
+  },
+  {
+    name: "hour_cos",
+    label: "Saat (Cos)",
+    category: "Zaman Kodlama",
+    description: "Günün saatinin kosinüs dönüşümü (döngüsel kodlama)",
+  },
+  {
+    name: "dow_sin",
+    label: "Haftanın Günü (Sin)",
+    category: "Zaman Kodlama",
+    description: "Haftanın gününün sinüs dönüşümü",
+  },
+  {
+    name: "dow_cos",
+    label: "Haftanın Günü (Cos)",
+    category: "Zaman Kodlama",
+    description: "Haftanın gününün kosinüs dönüşümü",
+  },
+  {
+    name: "doy_sin",
+    label: "Yılın Günü (Sin)",
+    category: "Zaman Kodlama",
+    description: "Mevsimselliği yakalamak için yılın gününün sinüs dönüşümü",
+  },
+  {
+    name: "doy_cos",
+    label: "Yılın Günü (Cos)",
+    category: "Zaman Kodlama",
+    description: "Mevsimselliği yakalamak için yılın gününün kosinüs dönüşümü",
+  },
+  {
+    name: "is_weekend",
+    label: "Hafta Sonu",
+    category: "Takvim",
+    description: "Cumartesi veya Pazar günü mü? (0/1)",
+  },
+  {
+    name: "is_holiday",
+    label: "Resmi Tatil",
+    category: "Takvim",
+    description: "Türkiye resmi tatil günü mü? (0/1)",
+  },
+  {
+    name: "HDD",
+    label: "Isıtma Derece Günü",
+    category: "Türetilmiş",
+    description: "18°C altındaki sıcaklık farkı (ısıtma ihtiyacı göstergesi)",
+  },
+  {
+    name: "CDD",
+    label: "Soğutma Derece Günü",
+    category: "Türetilmiş",
+    description: "18°C üzerindeki sıcaklık farkı (soğutma ihtiyacı göstergesi)",
   },
 ];
 
-// Custom Tooltip Types
+// Grafik tooltip
 interface CustomTooltipProps {
   active?: boolean;
   payload?: Array<{
     name: string;
     value: number | string;
     color: string;
-    dataKey?: string;
   }>;
   label?: string;
 }
 
-// Custom Tooltip for Charts
 const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
@@ -126,128 +203,162 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
 };
 
 export default function ModellerPage() {
+  // Kategorilere göre grupla
+  const featuresByCategory = FEATURES.reduce((acc, feat) => {
+    if (!acc[feat.category]) acc[feat.category] = [];
+    acc[feat.category].push(feat);
+    return acc;
+  }, {} as Record<string, typeof FEATURES>);
+
   return (
     <div className="space-y-8 pb-10">
-      {/* Header */}
+      {/* 1. Başlık */}
       <div>
         <h1 className="text-3xl font-bold">Makine Öğrenmesi Modelleri</h1>
         <p className="text-muted-foreground mt-2 text-lg">
-          Kullanılan algoritmalar, performans metrikleri ve özellik mühendisliği
-          (Feature Engineering) detayları.
+          Bu sayfada kullanılan algoritmaların performansları, değerlendirme
+          metrikleri ve özellik mühendisliği (feature engineering) detayları yer
+          almaktadır.
         </p>
       </div>
 
-      {/* Training Dataset Stats */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card className="p-4">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">Toplam Veri</p>
-              <p className="text-2xl font-bold mt-1">17,376 saat</p>
-              <p className="text-xs text-muted-foreground mt-1">~2 yıl</p>
+      {/* 2. Veri Seti İstatistikleri */}
+      <div>
+        <h2 className="text-xl font-bold mb-4">📊 Veri Seti Bilgileri</h2>
+        <div className="grid gap-4 md:grid-cols-4">
+          <Card className="p-4">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Toplam Veri</p>
+                <p className="text-2xl font-bold mt-1">17,376 saat</p>
+                <p className="text-xs text-muted-foreground mt-1">~2 yıl</p>
+              </div>
+              <HugeiconsIcon
+                icon={CpuIcon}
+                size={20}
+                className="text-primary"
+              />
             </div>
-            <HugeiconsIcon icon={CpuIcon} size={20} className="text-primary" />
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">Eğitim Seti</p>
-              <p className="text-2xl font-bold mt-1">16,656 saat</p>
-              <p className="text-xs text-muted-foreground mt-1">~23 ay (%96)</p>
+          </Card>
+          <Card className="p-4">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Eğitim Seti</p>
+                <p className="text-2xl font-bold mt-1">16,656 saat</p>
+                <p className="text-xs text-muted-foreground mt-1">%96</p>
+              </div>
+              <HugeiconsIcon
+                icon={FlashIcon}
+                size={20}
+                className="text-green-500"
+              />
             </div>
-            <HugeiconsIcon
-              icon={FlashIcon}
-              size={20}
-              className="text-green-500"
-            />
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">Test Seti</p>
-              <p className="text-2xl font-bold mt-1">720 saat</p>
-              <p className="text-xs text-muted-foreground mt-1">30 gün (%4)</p>
+          </Card>
+          <Card className="p-4">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Test Seti</p>
+                <p className="text-2xl font-bold mt-1">720 saat</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  30 gün (%4)
+                </p>
+              </div>
+              <HugeiconsIcon
+                icon={AnalysisTextLinkIcon}
+                size={20}
+                className="text-blue-500"
+              />
             </div>
-            <HugeiconsIcon
-              icon={AnalysisTextLinkIcon}
-              size={20}
-              className="text-blue-500"
-            />
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">Özellik Sayısı</p>
-              <p className="text-2xl font-bold mt-1">17</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Feature engineering
-              </p>
+          </Card>
+          <Card className="p-4">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Özellik Sayısı</p>
+                <p className="text-2xl font-bold mt-1">17</p>
+                <p className="text-xs text-muted-foreground mt-1">Feature</p>
+              </div>
+              <HugeiconsIcon
+                icon={Settings01Icon}
+                size={20}
+                className="text-orange-500"
+              />
             </div>
-            <HugeiconsIcon
-              icon={Settings01Icon}
-              size={20}
-              className="text-orange-500"
-            />
-          </div>
-        </Card>
+          </Card>
+        </div>
       </div>
 
-      {/* Gradient Boosting Nedir? */}
+      {/* 3. Gradient Boosting Nedir? */}
       <Card className="p-6 border-l-4 border-l-purple-500">
-        <h2 className="text-xl font-bold mb-4">📚 Gradient Boosting Nedir?</h2>
-        <p className="text-muted-foreground mb-4">
+        <h2 className="text-xl font-bold mb-3">📚 Gradient Boosting Nedir?</h2>
+        <p className="text-muted-foreground">
           <strong className="text-foreground">Gradient Boosting</strong>, zayıf
           öğrenicileri (karar ağaçları) sıralı olarak birleştirerek güçlü bir
           model oluşturan{" "}
           <strong className="text-foreground">ensemble learning</strong>{" "}
           tekniğidir. Her yeni ağaç, önceki modelin hatalarını düzeltmeye
-          çalışır.
+          çalışır. Gradient Descent algoritması ile kayıp fonksiyonu minimize
+          edilir.
         </p>
-        <div className="grid md:grid-cols-3 gap-4 text-sm">
-          <div className="bg-muted/50 rounded-lg p-3">
-            <strong>Çalışma Mantığı:</strong>
-            <p className="text-muted-foreground mt-1">
-              Gradient Descent ile kayıp fonksiyonu minimize edilir. Modeller
-              sıralı eğitilir.
-            </p>
-          </div>
-          <div className="bg-muted/50 rounded-lg p-3">
-            <strong>Neden Tercih Edildi:</strong>
-            <p className="text-muted-foreground mt-1">
-              Tabular zaman serisi verileri için en yüksek doğruluğu sağlar.
-            </p>
-          </div>
-          <div className="bg-muted/50 rounded-lg p-3">
-            <strong>Alternatifler:</strong>
-            <p className="text-muted-foreground mt-1">
-              LSTM/Transformer denendi, benzer doğrulukta ama daha yavaş.
-            </p>
-          </div>
-        </div>
       </Card>
 
-      {/* Model Performance Comparison Section */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Error Metrics Chart */}
-        <Card className="p-6">
-          <div className="mb-6 flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <HugeiconsIcon
-                  icon={ChartLineData02Icon}
-                  size={20}
-                  className="text-primary"
-                />
-                Hata Metrikleri Karşılaştırması
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                Düşük değer daha iyidir (MAE & RMSE)
+      {/* 4. Model Karşılaştırma */}
+      <div>
+        <h2 className="text-xl font-bold mb-4">
+          🏆 Model Performans Karşılaştırması
+        </h2>
+        <div className="grid gap-4 md:grid-cols-3">
+          {MODELS_DATA.map((model, idx) => (
+            <Card
+              key={model.name}
+              className={`p-6 ${
+                idx === 0
+                  ? "border-2 border-blue-500 bg-blue-50/30 dark:bg-blue-950/20"
+                  : ""
+              }`}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold text-xl">{model.name}</h3>
+                {idx === 0 && <Badge className="bg-blue-600">En İyi</Badge>}
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">R² Score</span>
+                  <span className="font-mono font-bold text-lg text-green-600">
+                    %{model.R2}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">MAE</span>
+                  <span className="font-mono">{model.MAE} MWh</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">RMSE</span>
+                  <span className="font-mono">{model.RMSE} MWh</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">MAPE</span>
+                  <span className="font-mono">%{model.MAPE}</span>
+                </div>
+              </div>
+
+              <p className="text-sm text-muted-foreground mt-4 pt-4 border-t">
+                {model.description}
               </p>
-            </div>
-          </div>
+            </Card>
+          ))}
+        </div>
+
+        {/* Grafik */}
+        <Card className="p-6 mt-4">
+          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <HugeiconsIcon
+              icon={ChartLineData02Icon}
+              size={20}
+              className="text-primary"
+            />
+            Hata Metrikleri Grafiği
+          </h3>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
@@ -261,13 +372,13 @@ export default function ModellerPage() {
                 <Legend />
                 <Bar
                   dataKey="MAE"
-                  name="Ortalama Mutlak Hata (MAE)"
+                  name="MAE (MWh)"
                   fill="#3b82f6"
                   radius={[4, 4, 0, 0]}
                 />
                 <Bar
                   dataKey="RMSE"
-                  name="Kök Ortalama Kare Hata (RMSE)"
+                  name="RMSE (MWh)"
                   fill="#ef4444"
                   radius={[4, 4, 0, 0]}
                 />
@@ -275,376 +386,248 @@ export default function ModellerPage() {
             </ResponsiveContainer>
           </div>
         </Card>
+      </div>
 
-        {/* Feature Importance Radar Chart */}
-        <Card className="p-6">
-          <div className="mb-6">
-            <h2 className="text-lg font-semibold flex items-center gap-2">
-              <HugeiconsIcon
-                icon={AnalysisTextLinkIcon}
-                size={20}
-                className="text-purple-500"
-              />
-              Özellik Önem Dağılımı (Feature Importance)
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              Modelin tahmin yaparken hangi verilere ağırlık verdiği
+      {/* 5. Metrik Açıklamaları */}
+      <div>
+        <h2 className="text-xl font-bold mb-4">📐 Değerlendirme Metrikleri</h2>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <Card className="p-4 border-l-4 border-l-blue-500">
+            <h4 className="font-bold text-blue-600">MAE</h4>
+            <p className="text-sm text-muted-foreground">Mean Absolute Error</p>
+            <code className="text-xs bg-muted px-2 py-1 rounded block my-2">
+              Σ|gerçek - tahmin| / n
+            </code>
+            <p className="text-sm">
+              Tahminlerin gerçek değerlerden ortalama sapması. Outlier&apos;lara
+              duyarsız, yorumlaması kolay.
             </p>
-          </div>
-          <div className="h-[300px] w-full flex items-center justify-center">
-            <ResponsiveContainer width="100%" height="100%">
-              <RadarChart
-                cx="50%"
-                cy="50%"
-                outerRadius="80%"
-                data={FEATURE_IMPORTANCE}
-              >
-                <PolarGrid opacity={0.2} />
-                <PolarAngleAxis
-                  dataKey="feature"
-                  tick={{ fill: "currentColor", fontSize: 12 }}
-                />
-                <PolarRadiusAxis
-                  angle={30}
-                  domain={[0, 50]}
-                  tick={{ fontSize: 10 }}
-                />
-                <Radar
-                  name="Önem Düzeyi (%)"
-                  dataKey="importance"
-                  stroke="#8884d8"
-                  fill="#8884d8"
-                  fillOpacity={0.6}
-                />
-                <Tooltip content={<CustomTooltip />} />
-              </RadarChart>
-            </ResponsiveContainer>
-          </div>
-        </Card>
-      </div>
-
-      {/* Metrik Açıklamaları */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card className="p-4 border-l-4 border-l-blue-500">
-          <h4 className="font-bold text-blue-600 text-sm">MAE</h4>
-          <p className="text-xs text-muted-foreground">Ortalama Mutlak Hata</p>
-          <code className="text-xs bg-muted px-1 rounded mt-1 block">
-            Σ|gerçek - tahmin| / n
-          </code>
-          <p className="text-xs mt-2">
-            Outlier&apos;lara duyarsız, yorumlaması kolay.
-          </p>
-        </Card>
-        <Card className="p-4 border-l-4 border-l-red-500">
-          <h4 className="font-bold text-red-600 text-sm">RMSE</h4>
-          <p className="text-xs text-muted-foreground">Kök Ort. Kare Hata</p>
-          <code className="text-xs bg-muted px-1 rounded mt-1 block">
-            √[Σ(hata)² / n]
-          </code>
-          <p className="text-xs mt-2">Büyük hataları daha çok cezalandırır.</p>
-        </Card>
-        <Card className="p-4 border-l-4 border-l-green-500">
-          <h4 className="font-bold text-green-600 text-sm">R² Score</h4>
-          <p className="text-xs text-muted-foreground">Belirleme Katsayısı</p>
-          <code className="text-xs bg-muted px-1 rounded mt-1 block">
-            1 - (SS_res / SS_tot)
-          </code>
-          <p className="text-xs mt-2">
-            %98.26 = Varyansın %98&apos;i açıklanıyor.
-          </p>
-        </Card>
-        <Card className="p-4 border-l-4 border-l-purple-500">
-          <h4 className="font-bold text-purple-600 text-sm">MAPE</h4>
-          <p className="text-xs text-muted-foreground">Ort. Mutlak % Hata</p>
-          <code className="text-xs bg-muted px-1 rounded mt-1 block">
-            Σ(|hata|/gerçek) × 100
-          </code>
-          <p className="text-xs mt-2">%1.37 = Mükemmel (&lt;5% çok iyi).</p>
-        </Card>
-      </div>
-
-      {/* Feature Importance Interpretation */}
-      <Card className="p-6 bg-linear-to-br from-blue-50/50 to-purple-50/50 dark:from-blue-950/20 dark:to-purple-950/20 border-blue-200 dark:border-blue-800">
-        <div className="flex gap-4">
-          <div className="shrink-0">
-            <HugeiconsIcon
-              icon={ChartHistogramIcon}
-              size={24}
-              className="text-blue-600 dark:text-blue-400"
-            />
-          </div>
-          <div className="space-y-3">
-            <h3 className="font-semibold text-lg">
-              📊 Feature Importance Yorumu
-            </h3>
-            <div className="space-y-2 text-sm text-muted-foreground">
-              <p>
-                <strong className="text-foreground">
-                  Zaman Kodlaması (%69.2):
-                </strong>{" "}
-                Elektrik talebi{" "}
-                <span className="text-blue-600 dark:text-blue-400 font-medium">
-                  güçlü zamansal pattern&apos;lere
-                </span>{" "}
-                sahiptir. Saat, gün ve mevsim bilgisi tahmin için en kritik
-                faktördür.
-              </p>
-              <p>
-                <strong className="text-foreground">
-                  Takvim & Hava (%25.2):
-                </strong>{" "}
-                Tatil günleri, hafta sonları ve meteorolojik koşullar talebi
-                önemli ölçüde etkiler. HDD/CDD gibi türetilmiş özellikler iklim
-                etkisini modelliyor.
-              </p>
-            </div>
-          </div>
+          </Card>
+          <Card className="p-4 border-l-4 border-l-red-500">
+            <h4 className="font-bold text-red-600">RMSE</h4>
+            <p className="text-sm text-muted-foreground">
+              Root Mean Square Error
+            </p>
+            <code className="text-xs bg-muted px-2 py-1 rounded block my-2">
+              √[Σ(hata)² / n]
+            </code>
+            <p className="text-sm">
+              Hataların karekökü. Büyük hataları daha fazla cezalandırır, kritik
+              sapmaları vurgular.
+            </p>
+          </Card>
+          <Card className="p-4 border-l-4 border-l-green-500">
+            <h4 className="font-bold text-green-600">R² Score</h4>
+            <p className="text-sm text-muted-foreground">Belirleme Katsayısı</p>
+            <code className="text-xs bg-muted px-2 py-1 rounded block my-2">
+              1 - (SS_res / SS_tot)
+            </code>
+            <p className="text-sm">
+              Modelin varyansı ne kadar açıkladığını gösterir. %98.26 =
+              Varyansın %98&apos;i model tarafından açıklanıyor.
+            </p>
+          </Card>
+          <Card className="p-4 border-l-4 border-l-purple-500">
+            <h4 className="font-bold text-purple-600">MAPE</h4>
+            <p className="text-sm text-muted-foreground">
+              Mean Absolute % Error
+            </p>
+            <code className="text-xs bg-muted px-2 py-1 rounded block my-2">
+              Σ(|hata|/gerçek) × 100
+            </code>
+            <p className="text-sm">
+              Yüzdelik hata oranı. %1.37 = Mükemmel performans (&lt;5% çok iyi
+              kabul edilir).
+            </p>
+          </Card>
         </div>
-      </Card>
-
-      {/* Technical Details Section */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Training Process */}
-        <Card className="p-6">
-          <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
-            <HugeiconsIcon icon={CpuIcon} size={20} className="text-primary" />
-            Model Eğitim Süreci
-          </h3>
-          <div className="space-y-3 text-sm">
-            <div className="flex gap-2">
-              <span className="font-medium min-w-[140px]">Veri Ayrımı:</span>
-              <span className="text-muted-foreground">
-                %96 eğitim (16,656 saat), %4 test (720 saat / 30 gün)
-              </span>
-            </div>
-            <div className="flex gap-2">
-              <span className="font-medium min-w-[140px]">Algoritma:</span>
-              <span className="text-muted-foreground">
-                Gradient Boosting (CatBoost, LightGBM, XGBoost)
-              </span>
-            </div>
-            <div className="flex gap-2">
-              <span className="font-medium min-w-[140px]">
-                Hiperparametreler:
-              </span>
-              <span className="text-muted-foreground">
-                1000 iterasyon, learning_rate=0.1, max_depth=8
-              </span>
-            </div>
-            <div className="flex gap-2">
-              <span className="font-medium min-w-[140px]">Optimizasyon:</span>
-              <span className="text-muted-foreground">
-                MAE (Mean Absolute Error) minimizasyonu
-              </span>
-            </div>
-            <div className="flex gap-2">
-              <span className="font-medium min-w-[140px]">Değerlendirme:</span>
-              <span className="text-muted-foreground">
-                Son 30 günlük gerçek veriye karşı test edildi
-              </span>
-            </div>
-          </div>
-        </Card>
-
-        {/* Feature Importance Methodology */}
-        <Card className="p-6">
-          <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
-            <HugeiconsIcon
-              icon={ChartHistogramIcon}
-              size={20}
-              className="text-primary"
-            />
-            Feature Importance Hesaplama
-          </h3>
-          <div className="space-y-3 text-sm">
-            <div>
-              <p className="font-medium mb-1">
-                CatBoost Gain-Based Importance:
-              </p>
-              <p className="text-muted-foreground">
-                Her özelliğin model dallarında sağladığı{" "}
-                <strong>bilgi kazancı</strong> (information gain) ölçülür.
-                Yüksek gain = daha iyi ayrım.
-              </p>
-            </div>
-            <div className="mt-3 pt-3 border-t">
-              <p className="font-medium mb-1">Hesaplama Mantığı:</p>
-              <p className="text-muted-foreground">
-                Model, her dallanmada hatayı en çok azaltan özelliği seçer.
-                Toplam hata azalması o özelliğin &quot;importance&quot;
-                değeridir.
-              </p>
-            </div>
-            <div className="mt-3 pt-3 border-t">
-              <p className="font-medium mb-1">Normalizasyon:</p>
-              <p className="text-muted-foreground">
-                Tüm özellikler toplamı %100 olacak şekilde normalize edilir.
-                Grafikte gösterilen değerler bu yüzdelik dağılımdır.
-              </p>
-            </div>
-          </div>
-        </Card>
       </div>
 
-      {/* Model Details Cards */}
-      <h2 className="text-2xl font-bold mt-8">
-        Algoritma Performans Detayları
-      </h2>
-      <div className="grid gap-4 md:grid-cols-3">
-        {MODELS_DATA.map((model) => (
-          <Card
-            key={model.name}
-            className={`p-6 border-l-4 ${
-              model.name === "CatBoost"
-                ? "border-l-green-500 bg-green-500/5"
-                : "border-l-gray-300"
-            }`}
-          >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-xl">{model.name}</h3>
-              {model.name === "CatBoost" && <Badge>Production Model</Badge>}
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex justify-between items-center border-b pb-2">
-                <span className="text-muted-foreground">R² Score (Başarı)</span>
-                <span className="font-mono font-bold text-lg text-green-600">
-                  %{model.R2}
-                </span>
-              </div>
-              <div className="flex justify-between items-center border-b pb-2">
-                <span className="text-muted-foreground">MAPE (Hata Payı)</span>
-                <span className="font-mono font-bold text-lg">
-                  %{model.MAPE}
-                </span>
-              </div>
-              <div className="flex justify-between items-center border-b pb-2">
-                <span className="text-muted-foreground">MAE</span>
-                <span className="font-mono">{model.MAE} MWh</span>
-              </div>
-              <div className="flex justify-between items-center border-b pb-2">
-                <span className="text-muted-foreground">RMSE</span>
-                <span className="font-mono">{model.RMSE} MWh</span>
-              </div>
-            </div>
-
-            <div className="mt-4 pt-4 text-sm text-muted-foreground">
-              {model.name === "CatBoost" &&
-                "Kategorik değişkenleri otomatik işleyebilen, gradient boosting tabanlı, simetrik ağaç yapısını kullanan en performanslı modelimiz."}
-              {model.name === "LightGBM" &&
-                "Microsoft tarafından geliştirilen, yaprak odaklı büyüme (leaf-wise growth) kullanan hızlı ve verimli algoritma."}
-              {model.name === "XGBoost" &&
-                "Sistem optimizasyonu ve ölçeklenebilirlik üzerine kurulu, Kaggle yarışmalarının popüler algoritması."}
+      {/* 6. Feature Importance */}
+      <div>
+        <h2 className="text-xl font-bold mb-4">🎯 Özellik Önem Dağılımı</h2>
+        <div className="grid gap-6 lg:grid-cols-2">
+          <Card className="p-6">
+            <h3 className="font-semibold mb-4">Radar Grafiği</h3>
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <RadarChart
+                  cx="50%"
+                  cy="50%"
+                  outerRadius="80%"
+                  data={FEATURE_IMPORTANCE}
+                >
+                  <PolarGrid opacity={0.2} />
+                  <PolarAngleAxis
+                    dataKey="feature"
+                    tick={{ fill: "currentColor", fontSize: 12 }}
+                  />
+                  <PolarRadiusAxis
+                    angle={30}
+                    domain={[0, 80]}
+                    tick={{ fontSize: 10 }}
+                  />
+                  <Radar
+                    name="Önem (%)"
+                    dataKey="importance"
+                    stroke="#8884d8"
+                    fill="#8884d8"
+                    fillOpacity={0.6}
+                  />
+                  <Tooltip content={<CustomTooltip />} />
+                </RadarChart>
+              </ResponsiveContainer>
             </div>
           </Card>
-        ))}
+          <Card className="p-6">
+            <h3 className="font-semibold mb-4">Yorum</h3>
+            <div className="space-y-4">
+              <div className="p-3 bg-purple-50 dark:bg-purple-950/30 rounded-lg">
+                <strong className="text-purple-600">
+                  Zaman Kodlaması (%69.2)
+                </strong>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Elektrik tüketimi güçlü günlük, haftalık ve mevsimsel
+                  döngülere sahiptir. Sin/Cos dönüşümleri bu pattern&apos;leri
+                  yakalar.
+                </p>
+              </div>
+              <div className="p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg">
+                <strong className="text-blue-600">Takvim (%12.8)</strong>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Hafta sonları ve tatil günlerinde tüketim profili değişir.
+                  is_weekend ve is_holiday bunu yakalar.
+                </p>
+              </div>
+              <div className="p-3 bg-green-50 dark:bg-green-950/30 rounded-lg">
+                <strong className="text-green-600">
+                  Hava & Sıcaklık (%12.4)
+                </strong>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Sıcaklık, nem ve radyasyon ısıtma/soğutma talebini etkiler.
+                </p>
+              </div>
+              <div className="p-3 bg-orange-50 dark:bg-orange-950/30 rounded-lg">
+                <strong className="text-orange-600">HDD/CDD (%5.6)</strong>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Isıtma ve soğutma derece günleri enerji ihtiyacını modelliyor.
+                </p>
+              </div>
+            </div>
+          </Card>
+        </div>
       </div>
 
-      {/* Feature Engineering Grid */}
+      {/* 7. Kullanılan Özellikler (17 adet) */}
       <div>
-        <h2 className="text-2xl font-bold mt-12 mb-6">
-          Özellik Mühendisliği (Feature Engineering)
+        <h2 className="text-xl font-bold mb-4">
+          🔧 Kullanılan Özellikler (17 Adet)
         </h2>
         <div className="grid gap-6 md:grid-cols-2">
-          {FEATURES_LIST.map((feat, idx) => (
-            <Card key={idx} className="p-6">
-              <div className="flex items-start gap-4">
-                <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  {idx === 0 && <HugeiconsIcon icon={FlashIcon} size={24} />}
-                  {idx === 1 && (
-                    <HugeiconsIcon icon={ChartHistogramIcon} size={24} />
-                  )}
-                  {idx === 2 && (
-                    <HugeiconsIcon icon={AnalysisTextLinkIcon} size={24} />
-                  )}
-                  {idx === 3 && (
-                    <HugeiconsIcon icon={Settings01Icon} size={24} />
-                  )}
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-lg">{feat.category}</h3>
-                  <p className="text-sm text-muted-foreground mt-1 mb-4">
-                    {feat.desc}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {feat.items.map((item, i) => (
-                      <Badge
-                        key={i}
-                        variant="secondary"
-                        className="font-normal text-xs"
-                      >
-                        {item}
-                      </Badge>
-                    ))}
+          {Object.entries(featuresByCategory).map(([category, features]) => (
+            <Card key={category} className="p-6">
+              <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                {category === "Meteorolojik" && (
+                  <HugeiconsIcon
+                    icon={FlashIcon}
+                    size={20}
+                    className="text-blue-500"
+                  />
+                )}
+                {category === "Zaman Kodlama" && (
+                  <HugeiconsIcon
+                    icon={ChartHistogramIcon}
+                    size={20}
+                    className="text-purple-500"
+                  />
+                )}
+                {category === "Takvim" && (
+                  <HugeiconsIcon
+                    icon={AnalysisTextLinkIcon}
+                    size={20}
+                    className="text-green-500"
+                  />
+                )}
+                {category === "Türetilmiş" && (
+                  <HugeiconsIcon
+                    icon={Settings01Icon}
+                    size={20}
+                    className="text-orange-500"
+                  />
+                )}
+                {category}
+                <Badge variant="secondary">{features.length}</Badge>
+              </h3>
+              <div className="space-y-3">
+                {features.map((feat) => (
+                  <div key={feat.name} className="border-b pb-2 last:border-0">
+                    <div className="flex items-center gap-2">
+                      <code className="text-xs bg-muted px-2 py-0.5 rounded">
+                        {feat.name}
+                      </code>
+                      <span className="font-medium text-sm">{feat.label}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {feat.description}
+                    </p>
                   </div>
-                </div>
+                ))}
               </div>
             </Card>
           ))}
         </div>
       </div>
 
-      {/* Technical Workflow */}
-      <Card className="p-8 mt-8 bg-muted/30 border-dashed">
-        <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+      {/* 8. Pipeline Mimarisi */}
+      <Card className="p-8 bg-muted/30 border-dashed">
+        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
           <HugeiconsIcon icon={CpuIcon} size={24} />
           Model Pipeline Mimarisi
-        </h3>
-        <div className="space-y-6">
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-between text-sm">
-            <div className="p-4 bg-background border rounded-lg text-center w-full md:w-auto hover:shadow-md transition-all">
-              <div className="font-bold text-primary">1. Veri Toplama</div>
-              <div className="text-muted-foreground text-xs mt-1">
-                EPİAŞ (Tüketim)
-              </div>
-              <div className="text-muted-foreground text-xs">
-                Open-Meteo (Hava)
-              </div>
+        </h2>
+        <div className="flex flex-col md:flex-row gap-4 items-center justify-between text-sm">
+          <div className="p-4 bg-background border rounded-lg text-center w-full md:w-auto">
+            <div className="font-bold text-primary">1. Veri Toplama</div>
+            <div className="text-muted-foreground text-xs mt-1">
+              EPİAŞ (Tüketim)
             </div>
-            <div className="hidden md:block h-px flex-1 bg-border relative">
-              <div className="absolute right-0 -top-1.5 ">▶</div>
-            </div>
-            <div className="p-4 bg-background border rounded-lg text-center w-full md:w-auto hover:shadow-md transition-all">
-              <div className="font-bold text-primary">2. Ön İşleme & FE</div>
-              <div className="text-muted-foreground text-xs mt-1">
-                Weighted Avg Weather
-              </div>
-              <div className="text-muted-foreground text-xs">
-                Cyclical & Lag Features
-              </div>
-            </div>
-            <div className="hidden md:block h-px flex-1 bg-border relative">
-              <div className="absolute right-0 -top-1.5 ">▶</div>
-            </div>
-            <div className="p-4 bg-background border rounded-lg text-center w-full md:w-auto hover:shadow-md transition-all">
-              <div className="font-bold text-primary">3. CatBoost Model</div>
-              <div className="text-muted-foreground text-xs mt-1">
-                Geriye Dönük Tesler
-              </div>
-              <div className="text-muted-foreground text-xs">
-                Hiperparametre Optimizasyonu
-              </div>
-            </div>
-            <div className="hidden md:block h-px flex-1 bg-border relative">
-              <div className="absolute right-0 -top-1.5 ">▶</div>
-            </div>
-            <div className="p-4 bg-background border rounded-lg text-center w-full md:w-auto hover:shadow-md transition-all">
-              <div className="font-bold text-primary">4. Tahmin Servisi</div>
-              <div className="text-muted-foreground text-xs mt-1">
-                FastAPI Endpoint
-              </div>
-              <div className="text-muted-foreground text-xs">
-                PostgreSQL Storage
-              </div>
+            <div className="text-muted-foreground text-xs">
+              Open-Meteo (Hava)
             </div>
           </div>
-          <p className="text-sm text-muted-foreground text-center max-w-2xl mx-auto">
-            Sistem, her saat başı otomatik olarak çalışarak EPİAŞ ve Hava Durumu
-            servislerinden güncel verileri çeker, özellik çıkarımı (feature
-            engineering) pipeline&apos;ından geçirir ve eğitilmiş CatBoost
-            modeli üzerinden sonraki 168 saatin (7 gün) tahminlerini üretir.
-          </p>
+          <div className="hidden md:block text-2xl">→</div>
+          <div className="p-4 bg-background border rounded-lg text-center w-full md:w-auto">
+            <div className="font-bold text-primary">2. Feature Engineering</div>
+            <div className="text-muted-foreground text-xs mt-1">
+              Nüfus Ağırlıklı Ortalama
+            </div>
+            <div className="text-muted-foreground text-xs">
+              Cyclical Encoding
+            </div>
+          </div>
+          <div className="hidden md:block text-2xl">→</div>
+          <div className="p-4 bg-background border rounded-lg text-center w-full md:w-auto">
+            <div className="font-bold text-primary">3. Model Eğitimi</div>
+            <div className="text-muted-foreground text-xs mt-1">
+              CatBoost Regressor
+            </div>
+            <div className="text-muted-foreground text-xs">
+              MAE Optimizasyonu
+            </div>
+          </div>
+          <div className="hidden md:block text-2xl">→</div>
+          <div className="p-4 bg-background border rounded-lg text-center w-full md:w-auto">
+            <div className="font-bold text-primary">4. Tahmin Servisi</div>
+            <div className="text-muted-foreground text-xs mt-1">
+              FastAPI + PostgreSQL
+            </div>
+            <div className="text-muted-foreground text-xs">168 Saat Tahmin</div>
+          </div>
         </div>
+        <p className="text-sm text-muted-foreground text-center mt-6 max-w-3xl mx-auto">
+          Sistem her saat başı otomatik çalışarak güncel hava durumu verilerini
+          çeker, özellik çıkarımı yapar ve CatBoost modeli ile sonraki 7 günün
+          tahminlerini üretir.
+        </p>
       </Card>
     </div>
   );
