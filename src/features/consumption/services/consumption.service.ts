@@ -9,14 +9,14 @@ export async function syncFromEpias(): Promise<number> {
   const now = new Date();
 
   // Find predictions from the past that don't have matching consumption data
-  // EPİAŞ has ~2 hour delay, so only look at predictions older than 2 hours
-  const twoHoursAgo = new Date(now.getTime() - 2 * 60 * 60 * 1000);
+  // EPİAŞ has ~2 hour delay, using 3 hours for safety margin
+  const threeHoursAgo = new Date(now.getTime() - 3 * 60 * 60 * 1000);
 
-  // Get past predictions (from last 7 days up to 2 hours ago)
+  // Get past predictions (from last 7 days up to 3 hours ago)
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
   const pastPredictions = await predictions.getByDateRange(
     sevenDaysAgo,
-    twoHoursAgo
+    threeHoursAgo
   );
 
   if (pastPredictions.length === 0) {
@@ -26,7 +26,7 @@ export async function syncFromEpias(): Promise<number> {
   // Get existing consumption data for the same range
   const existingConsumption = await consumption.getByDateRange(
     sevenDaysAgo,
-    twoHoursAgo
+    threeHoursAgo
   );
   const existingSet = new Set(
     existingConsumption.map((c) => c.datetime.toISOString())
