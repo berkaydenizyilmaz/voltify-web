@@ -87,9 +87,14 @@ export async function getWeatherForecast(
   hours: number = 168
 ): Promise<WeatherData[]> {
   // Fetch 8 days to ensure we have enough future data
-  const citiesData = await Promise.all(
-    CITIES.map((city) => fetchCityWeather(city.lat, city.lon, 8))
-  );
+  // Use sequential calls with delay to avoid rate limiting
+  const citiesData: OpenMeteoResponse[] = [];
+  for (const city of CITIES) {
+    const data = await fetchCityWeather(city.lat, city.lon, 8);
+    citiesData.push(data);
+    // Small delay between requests to avoid rate limiting
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
 
   const hourCount = citiesData[0].hourly.time.length;
   const allWeather: WeatherData[] = [];
