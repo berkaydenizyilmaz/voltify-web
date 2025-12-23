@@ -37,7 +37,7 @@ const MODELS_DATA = [
     MAPE: 1.37,
     color: "#3b82f6",
     description:
-      "Kategorik değişkenleri native olarak işleyebilen, Yandex tarafından geliştirilen gradient boosting algoritması.",
+      "Simetrik ağaçlar kullanır - her seviyede aynı bölme kriteri. Overfitting'e en dayanıklı, GPU'da çok hızlı.",
   },
   {
     name: "LightGBM",
@@ -47,7 +47,7 @@ const MODELS_DATA = [
     MAPE: 1.46,
     color: "#22c55e",
     description:
-      "Microsoft tarafından geliştirilen, yaprak odaklı büyüme (leaf-wise) kullanan hızlı algoritma.",
+      "Yaprak odaklı (leaf-wise) büyütür - en çok hata azaltan yaprağı genişletir. En hızlı eğitim süresi.",
   },
   {
     name: "XGBoost",
@@ -57,7 +57,7 @@ const MODELS_DATA = [
     MAPE: 1.53,
     color: "#f59e0b",
     description:
-      "DMLC tarafından geliştirilen, sistem optimizasyonu üzerine kurulu popüler algoritma.",
+      "Seviye odaklı (level-wise) büyütür - her seviyedeki tüm yaprakları genişletir. Dengeli ama yavaş.",
   },
 ];
 
