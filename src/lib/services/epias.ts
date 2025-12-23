@@ -95,16 +95,21 @@ async function authenticatedPost<T>(url: string, body: unknown): Promise<T> {
   });
 }
 
-// Format date for EPİAŞ API
+// Format date for EPİAŞ API (always in Turkey timezone)
 function formatDateForEpias(date: Date): string {
+  // Convert to Istanbul timezone string
+  const istanbulDate = new Date(
+    date.toLocaleString("en-US", { timeZone: "Europe/Istanbul" })
+  );
+
   const pad = (n: number) => n.toString().padStart(2, "0");
 
-  const year = date.getFullYear();
-  const month = pad(date.getMonth() + 1);
-  const day = pad(date.getDate());
-  const hours = pad(date.getHours());
-  const minutes = pad(date.getMinutes());
-  const seconds = pad(date.getSeconds());
+  const year = istanbulDate.getFullYear();
+  const month = pad(istanbulDate.getMonth() + 1);
+  const day = pad(istanbulDate.getDate());
+  const hours = pad(istanbulDate.getHours());
+  const minutes = pad(istanbulDate.getMinutes());
+  const seconds = pad(istanbulDate.getSeconds());
 
   // Turkey timezone is +03:00
   return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}+03:00`;
