@@ -429,29 +429,6 @@ export default async function DashboardPage() {
             Maksimum anlık talep
           </div>
         </Card>
-
-        <Card className="flex flex-col justify-between p-4 transition-all hover:shadow-sm">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">
-                Model Güveni
-              </p>
-              <div className="mt-2 flex items-baseline gap-1">
-                <p className="text-2xl font-bold text-purple-600">%96.4</p>
-              </div>
-            </div>
-            <div className="flex size-8 items-center justify-center rounded-full bg-purple-500/10">
-              <HugeiconsIcon
-                icon={CpuIcon}
-                size={16}
-                className="text-purple-500"
-              />
-            </div>
-          </div>
-          <div className="mt-2 text-xs text-muted-foreground">
-            MAPE başarı skoru
-          </div>
-        </Card>
       </div>
 
       {/* Upcoming Predictions Table */}

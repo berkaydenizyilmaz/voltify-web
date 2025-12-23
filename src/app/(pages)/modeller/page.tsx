@@ -2,12 +2,6 @@
 
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   ChartLineData02Icon,
@@ -201,6 +195,40 @@ export default function ModellerPage() {
         </Card>
       </div>
 
+      {/* Gradient Boosting Nedir? */}
+      <Card className="p-6 border-l-4 border-l-purple-500">
+        <h2 className="text-xl font-bold mb-4">📚 Gradient Boosting Nedir?</h2>
+        <p className="text-muted-foreground mb-4">
+          <strong className="text-foreground">Gradient Boosting</strong>, zayıf
+          öğrenicileri (karar ağaçları) sıralı olarak birleştirerek güçlü bir
+          model oluşturan{" "}
+          <strong className="text-foreground">ensemble learning</strong>{" "}
+          tekniğidir. Her yeni ağaç, önceki modelin hatalarını düzeltmeye
+          çalışır.
+        </p>
+        <div className="grid md:grid-cols-3 gap-4 text-sm">
+          <div className="bg-muted/50 rounded-lg p-3">
+            <strong>Çalışma Mantığı:</strong>
+            <p className="text-muted-foreground mt-1">
+              Gradient Descent ile kayıp fonksiyonu minimize edilir. Modeller
+              sıralı eğitilir.
+            </p>
+          </div>
+          <div className="bg-muted/50 rounded-lg p-3">
+            <strong>Neden Tercih Edildi:</strong>
+            <p className="text-muted-foreground mt-1">
+              Tabular zaman serisi verileri için en yüksek doğruluğu sağlar.
+            </p>
+          </div>
+          <div className="bg-muted/50 rounded-lg p-3">
+            <strong>Alternatifler:</strong>
+            <p className="text-muted-foreground mt-1">
+              LSTM/Transformer denendi, benzer doğrulukta ama daha yavaş.
+            </p>
+          </div>
+        </div>
+      </Card>
+
       {/* Model Performance Comparison Section */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Error Metrics Chart */}
@@ -292,6 +320,46 @@ export default function ModellerPage() {
               </RadarChart>
             </ResponsiveContainer>
           </div>
+        </Card>
+      </div>
+
+      {/* Metrik Açıklamaları */}
+      <div className="grid gap-4 md:grid-cols-4">
+        <Card className="p-4 border-l-4 border-l-blue-500">
+          <h4 className="font-bold text-blue-600 text-sm">MAE</h4>
+          <p className="text-xs text-muted-foreground">Ortalama Mutlak Hata</p>
+          <code className="text-xs bg-muted px-1 rounded mt-1 block">
+            Σ|gerçek - tahmin| / n
+          </code>
+          <p className="text-xs mt-2">
+            Outlier&apos;lara duyarsız, yorumlaması kolay.
+          </p>
+        </Card>
+        <Card className="p-4 border-l-4 border-l-red-500">
+          <h4 className="font-bold text-red-600 text-sm">RMSE</h4>
+          <p className="text-xs text-muted-foreground">Kök Ort. Kare Hata</p>
+          <code className="text-xs bg-muted px-1 rounded mt-1 block">
+            √[Σ(hata)² / n]
+          </code>
+          <p className="text-xs mt-2">Büyük hataları daha çok cezalandırır.</p>
+        </Card>
+        <Card className="p-4 border-l-4 border-l-green-500">
+          <h4 className="font-bold text-green-600 text-sm">R² Score</h4>
+          <p className="text-xs text-muted-foreground">Belirleme Katsayısı</p>
+          <code className="text-xs bg-muted px-1 rounded mt-1 block">
+            1 - (SS_res / SS_tot)
+          </code>
+          <p className="text-xs mt-2">
+            %98.26 = Varyansın %98&apos;i açıklanıyor.
+          </p>
+        </Card>
+        <Card className="p-4 border-l-4 border-l-purple-500">
+          <h4 className="font-bold text-purple-600 text-sm">MAPE</h4>
+          <p className="text-xs text-muted-foreground">Ort. Mutlak % Hata</p>
+          <code className="text-xs bg-muted px-1 rounded mt-1 block">
+            Σ(|hata|/gerçek) × 100
+          </code>
+          <p className="text-xs mt-2">%1.37 = Mükemmel (&lt;5% çok iyi).</p>
         </Card>
       </div>
 
@@ -577,232 +645,6 @@ export default function ModellerPage() {
             modeli üzerinden sonraki 168 saatin (7 gün) tahminlerini üretir.
           </p>
         </div>
-      </Card>
-
-      {/* Akademik Detaylar - Accordion */}
-      <Card className="p-6">
-        <h2 className="text-2xl font-bold mb-4">📚 Akademik Detaylar</h2>
-        <Accordion className="w-full">
-          {/* Gradient Boosting */}
-          <AccordionItem value="gradient-boosting">
-            <AccordionTrigger className="text-lg font-semibold">
-              Gradient Boosting Nedir?
-            </AccordionTrigger>
-            <AccordionContent className="space-y-4 pt-4">
-              <p>
-                <strong>Gradient Boosting</strong>, zayıf öğrenicileri (weak
-                learners) sıralı olarak birleştirerek güçlü bir model oluşturan{" "}
-                <strong>ensemble learning</strong> tekniğidir.
-              </p>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="bg-muted/50 rounded-lg p-4">
-                  <h4 className="font-semibold mb-2">📖 Temel Mantık</h4>
-                  <ul className="text-sm space-y-1 list-disc list-inside text-muted-foreground">
-                    <li>
-                      Her yeni model, öncekinin{" "}
-                      <strong>hatalarını düzeltir</strong>
-                    </li>
-                    <li>
-                      Gradient Descent ile kayıp fonksiyonunu minimize eder
-                    </li>
-                    <li>Modeller sıralı (sequential) olarak eğitilir</li>
-                    <li>Son tahmin: tüm modellerin ağırlıklı toplamı</li>
-                  </ul>
-                </div>
-                <div className="bg-muted/50 rounded-lg p-4">
-                  <h4 className="font-semibold mb-2">⚡ Avantajları</h4>
-                  <ul className="text-sm space-y-1 list-disc list-inside text-muted-foreground">
-                    <li>Tabular data için yüksek doğruluk</li>
-                    <li>Kategorik + sayısal değişkenler birlikte</li>
-                    <li>Eksik verilere karşı robust</li>
-                    <li>Feature importance otomatik hesaplanır</li>
-                  </ul>
-                </div>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-
-          {/* Model Karşılaştırma */}
-          <AccordionItem value="model-comparison">
-            <AccordionTrigger className="text-lg font-semibold">
-              CatBoost vs LightGBM vs XGBoost
-            </AccordionTrigger>
-            <AccordionContent className="pt-4">
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left py-2 px-3 font-semibold">
-                        Özellik
-                      </th>
-                      <th className="text-left py-2 px-3 font-semibold text-blue-600">
-                        CatBoost ⭐
-                      </th>
-                      <th className="text-left py-2 px-3 font-semibold">
-                        LightGBM
-                      </th>
-                      <th className="text-left py-2 px-3 font-semibold">
-                        XGBoost
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-muted-foreground">
-                    <tr className="border-b">
-                      <td className="py-2 px-3 font-medium text-foreground">
-                        Geliştirici
-                      </td>
-                      <td className="py-2 px-3">Yandex (2017)</td>
-                      <td className="py-2 px-3">Microsoft (2016)</td>
-                      <td className="py-2 px-3">DMLC (2014)</td>
-                    </tr>
-                    <tr className="border-b">
-                      <td className="py-2 px-3 font-medium text-foreground">
-                        Kategorik Değişken
-                      </td>
-                      <td className="py-2 px-3">
-                        <Badge className="bg-green-600">Native ✓</Badge>
-                      </td>
-                      <td className="py-2 px-3">Encoding gerekli</td>
-                      <td className="py-2 px-3">Encoding gerekli</td>
-                    </tr>
-                    <tr className="border-b">
-                      <td className="py-2 px-3 font-medium text-foreground">
-                        Overfitting Önleme
-                      </td>
-                      <td className="py-2 px-3">Ordered boosting</td>
-                      <td className="py-2 px-3">Leaf-wise</td>
-                      <td className="py-2 px-3">Level-wise</td>
-                    </tr>
-                    <tr className="border-b">
-                      <td className="py-2 px-3 font-medium text-foreground">
-                        Eğitim Hızı
-                      </td>
-                      <td className="py-2 px-3">Orta</td>
-                      <td className="py-2 px-3">
-                        <Badge className="bg-green-600">En hızlı ⚡</Badge>
-                      </td>
-                      <td className="py-2 px-3">Yavaş</td>
-                    </tr>
-                    <tr>
-                      <td className="py-2 px-3 font-medium text-foreground">
-                        Bu Projede
-                      </td>
-                      <td className="py-2 px-3 bg-blue-50 dark:bg-blue-950/30 rounded">
-                        <strong>En düşük hata</strong>
-                      </td>
-                      <td className="py-2 px-3">2. sırada</td>
-                      <td className="py-2 px-3">3. sırada</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-
-          {/* Metrikler */}
-          <AccordionItem value="metrics">
-            <AccordionTrigger className="text-lg font-semibold">
-              Değerlendirme Metrikleri
-            </AccordionTrigger>
-            <AccordionContent className="space-y-4 pt-4">
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="border rounded-lg p-4">
-                  <h4 className="font-bold text-blue-600 mb-1">
-                    MAE (Mean Absolute Error)
-                  </h4>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    Ortalama Mutlak Hata
-                  </p>
-                  <code className="text-xs bg-muted px-2 py-1 rounded block mb-2">
-                    MAE = (1/n) × Σ|gerçek - tahmin|
-                  </code>
-                  <p className="text-sm">
-                    <strong>Yorum:</strong> 519 MWh → ~%1.5 hata (çok iyi)
-                  </p>
-                </div>
-                <div className="border rounded-lg p-4">
-                  <h4 className="font-bold text-red-600 mb-1">
-                    RMSE (Root Mean Square Error)
-                  </h4>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    Kök Ortalama Kare Hata
-                  </p>
-                  <code className="text-xs bg-muted px-2 py-1 rounded block mb-2">
-                    RMSE = √[(1/n) × Σ(gerçek - tahmin)²]
-                  </code>
-                  <p className="text-sm">
-                    <strong>Yorum:</strong> Büyük hataları daha çok cezalandırır
-                  </p>
-                </div>
-                <div className="border rounded-lg p-4">
-                  <h4 className="font-bold text-green-600 mb-1">
-                    R² (Determination Coefficient)
-                  </h4>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    Belirleme Katsayısı
-                  </p>
-                  <code className="text-xs bg-muted px-2 py-1 rounded block mb-2">
-                    R² = 1 - (SS_res / SS_tot)
-                  </code>
-                  <p className="text-sm">
-                    <strong>Yorum:</strong> %98.26 → Varyansın %98&apos;i
-                    açıklanıyor
-                  </p>
-                </div>
-                <div className="border rounded-lg p-4">
-                  <h4 className="font-bold text-purple-600 mb-1">MAPE</h4>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    Ortalama Mutlak Yüzde Hata
-                  </p>
-                  <code className="text-xs bg-muted px-2 py-1 rounded block mb-2">
-                    MAPE = (100/n) × Σ(|hata| / gerçek)
-                  </code>
-                  <p className="text-sm">
-                    <strong>Yorum:</strong> %1.37 → Mükemmel (&lt;5% çok iyi)
-                  </p>
-                </div>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-
-          {/* Feature Importance */}
-          <AccordionItem value="feature-importance">
-            <AccordionTrigger className="text-lg font-semibold">
-              Feature Importance Nasıl Hesaplanır?
-            </AccordionTrigger>
-            <AccordionContent className="space-y-4 pt-4">
-              <p className="text-muted-foreground">
-                CatBoost <strong>Gain-based Importance</strong> kullanır: her
-                özelliğin model dallarında sağladığı bilgi kazancı (information
-                gain) ölçülür.
-              </p>
-              <div className="bg-muted/50 rounded-lg p-4">
-                <h4 className="font-semibold mb-2">Hesaplama Mantığı</h4>
-                <ol className="text-sm space-y-2 list-decimal list-inside text-muted-foreground">
-                  <li>
-                    Model her dallanmada <strong>hatayı en çok azaltan</strong>{" "}
-                    özelliği seçer
-                  </li>
-                  <li>
-                    Bu özelliğin toplam hata azaltması = &quot;importance&quot;
-                    değeri
-                  </li>
-                  <li>
-                    Tüm özellikler{" "}
-                    <strong>%100 olacak şekilde normalize</strong> edilir
-                  </li>
-                </ol>
-              </div>
-              <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
-                <p className="text-sm">
-                  <strong>Bu projede:</strong> Zaman kodlaması (%69.2) en yüksek
-                  - elektrik tüketiminin güçlü günlük/haftalık/mevsimsel
-                  patternleri olduğunu gösterir.
-                </p>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
       </Card>
     </div>
   );

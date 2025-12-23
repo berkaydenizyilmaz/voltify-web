@@ -150,7 +150,7 @@ export default function HakkindaPage() {
             <span className="font-bold">Frontend & UI</span>
           </div>
           <ul className="space-y-2 text-sm text-muted-foreground list-disc list-inside">
-            <li>Next.js 15 (App Router)</li>
+            <li>Next.js 16 (App Router)</li>
             <li>React Server Components</li>
             <li>TailwindCSS v4</li>
             <li>Shadcn/UI & Recharts</li>
@@ -187,7 +187,6 @@ export default function HakkindaPage() {
             <li>CatBoost / XGBoost / LightGBM</li>
             <li>Scikit-Learn (Metrics)</li>
             <li>Pandas & NumPy</li>
-            <li>Joblib (Model Serialization)</li>
           </ul>
         </Card>
       </div>
