@@ -36,6 +36,7 @@ function groupByDay(predictions: Awaited<ReturnType<typeof getPredictions>>) {
       weekday: "long",
       day: "numeric",
       month: "long",
+      timeZone: "Europe/Istanbul",
     });
     if (!groups[key]) groups[key] = [];
     groups[key].push(p);
@@ -70,6 +71,7 @@ export default async function TahminlerPage() {
       month: "2-digit",
       hour: "2-digit",
       minute: "2-digit",
+      timeZone: "Europe/Istanbul",
     }),
     predicted: Math.round(p.predicted),
   }));
